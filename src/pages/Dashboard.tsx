@@ -9,6 +9,7 @@ import {
   LogOut,
   User,
   BarChart3,
+  ShoppingBag,
 } from "lucide-react";
 import DailyWorkout from "@/components/DailyWorkout";
 
@@ -61,7 +62,7 @@ const Dashboard = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4"
+          className="grid grid-cols-2 md:grid-cols-5 gap-4"
         >
           <button
             onClick={() => navigate("/booking")}
@@ -84,6 +85,13 @@ const Dashboard = () => {
           <button className="glass rounded-xl p-4 glass-hover group text-left">
             <User className="w-5 h-5 text-primary mb-2 group-hover:scale-110 transition-transform" />
             <span className="text-sm font-medium">Mi Perfil</span>
+          </button>
+          <button
+            onClick={() => navigate("/store")}
+            className="glass rounded-xl p-4 glass-hover group text-left"
+          >
+            <ShoppingBag className="w-5 h-5 text-primary mb-2 group-hover:scale-110 transition-transform" />
+            <span className="text-sm font-medium">Tienda</span>
           </button>
         </motion.div>
 
