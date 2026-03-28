@@ -9,6 +9,7 @@ import {
   LogOut,
   User,
   BarChart3,
+  ShoppingBag,
 } from "lucide-react";
 import DailyWorkout from "@/components/DailyWorkout";
 
