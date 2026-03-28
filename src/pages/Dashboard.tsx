@@ -86,6 +86,13 @@ const Dashboard = () => {
             <User className="w-5 h-5 text-primary mb-2 group-hover:scale-110 transition-transform" />
             <span className="text-sm font-medium">Mi Perfil</span>
           </button>
+          <button
+            onClick={() => navigate("/store")}
+            className="glass rounded-xl p-4 glass-hover group text-left"
+          >
+            <ShoppingBag className="w-5 h-5 text-primary mb-2 group-hover:scale-110 transition-transform" />
+            <span className="text-sm font-medium">Tienda</span>
+          </button>
         </motion.div>
 
         {/* Upcoming Classes */}
