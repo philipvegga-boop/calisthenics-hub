@@ -26,7 +26,7 @@ const Dashboard = () => {
       {/* Top Bar */}
       <header className="border-b border-border glass sticky top-0 z-40">
         <div className="container mx-auto px-6 h-16 flex items-center justify-between">
-          <span className="font-heading text-lg font-bold text-gradient">CALIWORKZ</span>
+          <span className="font-heading text-lg font-bold text-gradient"><span className="font-heading text-lg font-bold text-gradient">PODERESTOICO</span></span>
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" onClick={() => navigate("/admin")}>
               <BarChart3 className="w-4 h-4" />

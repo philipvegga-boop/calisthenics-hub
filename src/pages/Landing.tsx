@@ -167,7 +167,7 @@ const Landing = () => {
       {/* Footer */}
       <footer className="border-t border-border py-8">
         <div className="container mx-auto px-6 text-center text-sm text-muted-foreground">
-          © 2026 CaliWorkz. Todos los derechos reservados.
+          © 2026 PoderEstoico. Todos los derechos reservados.
         </div>
       </footer>
     </div>
