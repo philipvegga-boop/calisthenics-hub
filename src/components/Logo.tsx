@@ -1,12 +1,14 @@
+import React from 'react';
+
 export const Logo = () => {
   return (
-    <div className="flex items-center gap-3">
+    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
       <img 
-        src="/logo-poderestoico.png" 
+        src="/logo-cancha.png" 
         alt="Logo" 
-        className="h-10 w-10 rounded-full border-2 border-blue-500" 
+        style={{ width: '40px', height: '40px', borderRadius: '50%' }} 
       />
-      <span className="text-xl font-bold text-white">
+      <span style={{ fontSize: '20px', fontWeight: 'bold', color: 'white' }}>
         PODER ESTOICO
       </span>
     </div>
