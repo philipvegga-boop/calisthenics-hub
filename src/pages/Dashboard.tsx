@@ -13,12 +13,12 @@ import {
 import DailyWorkout from "@/components/DailyWorkout";
 
 const upcomingClasses = [
-  { id: 1, name: "Calistenia Lunes", time: "18:00", day: "Lun", spots: 3, maxSpots: 12 },
-  { id: 2, name: "Calistenia Martes", time: "18:00", day: "Mar", spots: 5, maxSpots: 12 },
-  { id: 3, name: "Calistenia Miércoles", time: "18:00", day: "Mié", spots: 8, maxSpots: 12 },
-  { id: 4, name: "Calistenia Jueves", time: "18:00", day: "Jue", spots: 6, maxSpots: 12 },
-  { id: 5, name: "Calistenia Viernes", time: "18:00", day: "Vie", spots: 10, maxSpots: 12 },
-  { id: 6, name: "Calistenia Sábado", time: "10:00", day: "Sáb", spots: 9, maxSpots: 12 },
+  { id: 1, name: "Calistenia Lunes", time: "18:00", duration: "1h", day: "Lun", reservations: 14, maxSpots: 20 },
+  { id: 2, name: "Calistenia Martes", time: "18:00", duration: "1h", day: "Mar", reservations: 8, maxSpots: 20 },
+  { id: 3, name: "Calistenia Miércoles", time: "18:00", duration: "1h", day: "Mié", reservations: 17, maxSpots: 20 },
+  { id: 4, name: "Calistenia Jueves", time: "18:00", duration: "1h", day: "Jue", reservations: 10, maxSpots: 20 },
+  { id: 5, name: "Calistenia Viernes", time: "18:00", duration: "1h", day: "Vie", reservations: 5, maxSpots: 20 },
+  { id: 6, name: "Calistenia Sábado", time: "10:00", duration: "1h", day: "Sáb", reservations: 12, maxSpots: 20 },
 ];
 
 const Dashboard = () => {
@@ -109,13 +109,13 @@ const Dashboard = () => {
                   <div>
                     <p className="text-sm font-medium">{cls.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {cls.day} · {cls.time}
+                      {cls.day} · {cls.time} · {cls.duration}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className={`text-xs font-medium px-2 py-1 rounded-full ${cls.spots <= 3 ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary"}`}>
-                    {cls.spots} cupos
+                  <span className={`text-xs font-medium px-2 py-1 rounded-full ${cls.maxSpots - cls.reservations <= 3 ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary"}`}>
+                    {cls.reservations}/{cls.maxSpots} reservas
                   </span>
                   <Button variant="default" size="sm">Reservar</Button>
                 </div>
