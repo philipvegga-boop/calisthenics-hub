@@ -99,7 +99,7 @@ const DailyWorkout = () => {
         className="mt-6 rounded-xl border border-primary/20 bg-primary/5 p-5 flex items-start gap-4"
       >
         <div className="w-10 h-10 rounded-full gradient-lime flex items-center justify-center flex-shrink-0">
-          <Stretch className="w-5 h-5 text-primary-foreground" />
+          <Heart className="w-5 h-5 text-primary-foreground" />
         </div>
         <div>
           <h4 className="font-heading text-sm font-semibold mb-1">¡No olvides elongar!</h4>
