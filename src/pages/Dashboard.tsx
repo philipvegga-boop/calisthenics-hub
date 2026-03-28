@@ -1,17 +1,9 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import {
-  Calendar,
-  Dumbbell,
-  Clock,
-  ChevronRight,
-  LogOut,
-  User,
-  BarChart3,
-  ShoppingBag,
-} from "lucide-react";
+import { Calendar, Dumbbell, Clock, ChevronRight, LogOut, User, ChartBar as BarChart3, ShoppingBag } from "lucide-react";
 import DailyWorkout from "@/components/DailyWorkout";
+import Logo from "@/components/Logo";
 
 const upcomingClasses = [
   { id: 1, name: "Calistenia Lunes", time: "18:00", duration: "1h", day: "Lun", reservations: 14, maxSpots: 20 },
@@ -30,7 +22,7 @@ const Dashboard = () => {
       {/* Top Bar */}
       <header className="border-b border-border glass sticky top-0 z-40">
         <div className="container mx-auto px-6 h-16 flex items-center justify-between">
-          <span className="font-heading text-lg font-bold text-gradient"><span className="font-heading text-lg font-bold text-gradient">PODERESTOICO</span></span>
+          <Logo size="md" />
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" onClick={() => navigate("/admin")}>
               <BarChart3 className="w-4 h-4" />

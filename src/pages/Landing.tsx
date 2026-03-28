@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Calendar, Dumbbell, Users, ClipboardList, Shield, TrendingUp } from "lucide-react";
 import heroImage from "@/assets/hero-calisthenics.jpg";
+import Logo from "@/components/Logo";
 
 const features = [
   {
@@ -45,7 +46,7 @@ const Landing = () => {
       {/* Navbar */}
       <nav className="fixed top-0 left-0 right-0 z-50 glass">
         <div className="container mx-auto px-6 h-16 flex items-center justify-between">
-          <span className="font-heading text-xl font-bold text-gradient">PODERESTOICO</span>
+          <Logo size="md" />
           <div className="flex gap-3">
             <Button variant="ghost" size="sm" onClick={() => navigate("/login")}>
               Iniciar Sesión

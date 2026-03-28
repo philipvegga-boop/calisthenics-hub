@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, Mail, Lock, User } from "lucide-react";
+import Logo from "@/components/Logo";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -37,7 +38,9 @@ const Login = () => {
 
         <div className="glass rounded-2xl p-8">
           <div className="text-center mb-8">
-            <h1 className="font-heading text-2xl font-bold text-gradient mb-2"><h1 className="font-heading text-2xl font-bold text-gradient mb-2">PODERESTOICO</h1></h1>
+            <div className="flex justify-center mb-2">
+              <Logo size="lg" />
+            </div>
             <p className="text-muted-foreground text-sm">
               {isRegister ? "Creá tu cuenta para comenzar" : "Ingresá a tu cuenta"}
             </p>
