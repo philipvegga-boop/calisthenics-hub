@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Flame, Target, Dumbbell, Zap, Stretch } from "lucide-react";
+import { Flame, Target, Dumbbell, Zap, Heart } from "lucide-react";
 
 interface WorkoutBlock {
   icon: React.ElementType;
