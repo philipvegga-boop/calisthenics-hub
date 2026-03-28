@@ -109,13 +109,13 @@ const Dashboard = () => {
                   <div>
                     <p className="text-sm font-medium">{cls.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {cls.day} · {cls.time}
+                      {cls.day} · {cls.time} · {cls.duration}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className={`text-xs font-medium px-2 py-1 rounded-full ${cls.spots <= 3 ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary"}`}>
-                    {cls.spots} cupos
+                  <span className={`text-xs font-medium px-2 py-1 rounded-full ${cls.maxSpots - cls.reservations <= 3 ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary"}`}>
+                    {cls.reservations}/{cls.maxSpots} reservas
                   </span>
                   <Button variant="default" size="sm">Reservar</Button>
                 </div>
