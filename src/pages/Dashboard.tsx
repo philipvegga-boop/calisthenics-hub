@@ -13,9 +13,12 @@ import {
 import DailyWorkout from "@/components/DailyWorkout";
 
 const upcomingClasses = [
-  { id: 1, name: "Calistenia General", time: "18:00", day: "Hoy", spots: 3, maxSpots: 12 },
-  { id: 2, name: "Skills Avanzado", time: "19:30", day: "Hoy", spots: 5, maxSpots: 8 },
-  { id: 3, name: "Calistenia General", time: "09:00", day: "Mañana", spots: 8, maxSpots: 12 },
+  { id: 1, name: "Calistenia Lunes", time: "18:00", day: "Lun", spots: 3, maxSpots: 12 },
+  { id: 2, name: "Calistenia Martes", time: "18:00", day: "Mar", spots: 5, maxSpots: 12 },
+  { id: 3, name: "Calistenia Miércoles", time: "18:00", day: "Mié", spots: 8, maxSpots: 12 },
+  { id: 4, name: "Calistenia Jueves", time: "18:00", day: "Jue", spots: 6, maxSpots: 12 },
+  { id: 5, name: "Calistenia Viernes", time: "18:00", day: "Vie", spots: 10, maxSpots: 12 },
+  { id: 6, name: "Calistenia Sábado", time: "10:00", day: "Sáb", spots: 9, maxSpots: 12 },
 ];
 
 const Dashboard = () => {
