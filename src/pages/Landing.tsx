@@ -45,7 +45,7 @@ const Landing = () => {
       {/* Navbar */}
       <nav className="fixed top-0 left-0 right-0 z-50 glass">
         <div className="container mx-auto px-6 h-16 flex items-center justify-between">
-          <span className="font-heading text-xl font-bold text-gradient">CALIWORKZ</span>
+          <span className="font-heading text-xl font-bold text-gradient">PODERESTOICO</span>
           <div className="flex gap-3">
             <Button variant="ghost" size="sm" onClick={() => navigate("/login")}>
               Iniciar Sesión
@@ -167,7 +167,7 @@ const Landing = () => {
       {/* Footer */}
       <footer className="border-t border-border py-8">
         <div className="container mx-auto px-6 text-center text-sm text-muted-foreground">
-          © 2026 CaliWorkz. Todos los derechos reservados.
+          © 2026 PoderEstoico. Todos los derechos reservados.
         </div>
       </footer>
     </div>
