@@ -1,16 +1,33 @@
 import React from 'react';
 
-export const Logo = () => {
+interface LogoProps {
+  size?: 'sm' | 'md' | 'lg';
+  showText?: boolean;
+}
+
+const sizeMap = {
+  sm: { img: 32, text: 'text-sm' },
+  md: { img: 40, text: 'text-lg' },
+  lg: { img: 60, text: 'text-2xl' },
+};
+
+export const Logo: React.FC<LogoProps> = ({ size = 'md', showText = true }) => {
+  const s = sizeMap[size];
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-      <img 
-        src="/logo.png" 
-        alt="Logo Poder Estoico" 
-        style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} 
+    <div className="flex items-center gap-3">
+      <img
+        src="/logo.png"
+        alt="Logo Poder Estoico"
+        style={{ width: s.img, height: s.img }}
+        className="rounded-full object-cover"
       />
-      <span style={{ fontSize: '18px', fontWeight: 'bold', color: 'white' }}>
-        PODER ESTOICO
-      </span>
+      {showText && (
+        <span className={`font-heading font-bold text-foreground tracking-wider ${s.text}`}>
+          PODERESTOICO
+        </span>
+      )}
     </div>
   );
 };
+
+export default Logo;

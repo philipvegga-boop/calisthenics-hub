@@ -1,100 +1,219 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Check } from "lucide-react";
+import { ArrowLeft, Crown, Sword, Shield, MessageCircle, Banknote, Copy } from "lucide-react";
+import { useState } from "react";
 
-interface Plan {
-  id: number;
-  name: string;
-  frequency: string;
-  price: string;
-  period: string;
-  highlight?: boolean;
-  badge?: string;
-}
-
-const plans: Plan[] = [
-  { id: 1, name: "Calistenia Mensual", frequency: "2 clases por semana", price: "38.990", period: "mes" },
-  { id: 2, name: "Calistenia Mensual Estudiante", frequency: "3 clases por semana", price: "40.500", period: "mes", badge: "Estudiante" },
-  { id: 3, name: "Calistenia Mensual", frequency: "3 clases por semana", price: "44.990", period: "mes", highlight: true },
-  { id: 4, name: "Calistenia Mensual", frequency: "4 clases por semana", price: "49.990", period: "mes" },
-  { id: 5, name: "Calistenia Trimestral", frequency: "2 clases por semana", price: "104.990", period: "trimestre" },
-  { id: 6, name: "Calistenia Trimestral", frequency: "3 clases por semana", price: "120.990", period: "trimestre" },
-  { id: 7, name: "Calistenia Trimestral", frequency: "4 clases por semana", price: "134.990", period: "trimestre" },
-  { id: 8, name: "Calistenia Semestral", frequency: "2 clases por semana", price: "191.990", period: "semestre" },
-  { id: 9, name: "Calistenia Semestral", frequency: "3 clases por semana", price: "220.990", period: "semestre" },
-  { id: 10, name: "Calistenia Semestral", frequency: "4 clases por semana", price: "245.990", period: "semestre" },
-  { id: 11, name: "Calistenia Mensual Estudiante", frequency: "2 clases por semana", price: "35.000", period: "mes", badge: "Estudiante" },
-  { id: 12, name: "Clase Suelta", frequency: "1 clase", price: "10.000", period: "clase" },
+const plans = [
+  {
+    id: "basico",
+    name: "Básico",
+    icon: Shield,
+    description: "Ideal para comenzar tu camino en la calistenia",
+    color: "from-secondary to-card",
+    borderColor: "border-border",
+    prices: [
+      { label: "Mensual — 2 clases/semana", price: "$38.990", period: "/mes" },
+      { label: "Mensual — 3 clases/semana", price: "$44.990", period: "/mes" },
+      { label: "Mensual — 4 clases/semana", price: "$49.990", period: "/mes" },
+    ],
+  },
+  {
+    id: "guerrero",
+    name: "Guerrero",
+    icon: Sword,
+    popular: true,
+    description: "Para quienes buscan compromiso y resultados visibles",
+    color: "from-primary/20 to-primary/5",
+    borderColor: "border-primary/50",
+    prices: [
+      { label: "Trimestral — 2 clases/semana", price: "$104.990", period: "/3 meses" },
+      { label: "Trimestral — 3 clases/semana", price: "$120.990", period: "/3 meses" },
+      { label: "Trimestral — 4 clases/semana", price: "$134.990", period: "/3 meses" },
+    ],
+  },
+  {
+    id: "estoico",
+    name: "Plan Estoico",
+    icon: Crown,
+    description: "El compromiso máximo. Disciplina total, resultados garantizados",
+    color: "from-amber-500/20 to-amber-500/5",
+    borderColor: "border-amber-500/40",
+    prices: [
+      { label: "Semestral — 2 clases/semana", price: "$191.990", period: "/6 meses" },
+      { label: "Semestral — 3 clases/semana", price: "$220.990", period: "/6 meses" },
+      { label: "Semestral — 4 clases/semana", price: "$245.990", period: "/6 meses" },
+    ],
+  },
 ];
 
-const periodGroups = [
-  { label: "Planes Mensuales", plans: plans.filter(p => p.period === "mes") },
-  { label: "Planes Trimestrales", plans: plans.filter(p => p.period === "trimestre") },
-  { label: "Planes Semestrales", plans: plans.filter(p => p.period === "semestre") },
-  { label: "Clase Suelta", plans: plans.filter(p => p.period === "clase") },
+const studentPlans = [
+  { label: "Mensual Estudiante — 2 clases/semana", price: "$35.000" },
+  { label: "Mensual Estudiante — 3 clases/semana", price: "$40.500" },
 ];
+
+// ← Editá estos datos con los tuyos reales
+const bankInfo = {
+  banco: "Banco Estado",
+  tipoCuenta: "Cuenta Vista / RUT",
+  numeroCuenta: "XXXXXXXXXXXX",
+  rut: "XX.XXX.XXX-X",
+  titular: "Nombre del Titular",
+};
+
+const whatsappNumber = "56912345678"; // ← Cambiá por tu número real
 
 const Store = () => {
   const navigate = useNavigate();
+  const [copiedField, setCopiedField] = useState<string | null>(null);
+
+  const copyToClipboard = (text: string, field: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedField(field);
+    setTimeout(() => setCopiedField(null), 2000);
+  };
+
+  const whatsappLink = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
+    "Hola! Quiero inscribirme en PODERESTOICO. Adjunto mi comprobante de transferencia."
+  )}`;
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border glass sticky top-0 z-40">
-        <div className="container mx-auto px-6 h-16 flex items-center gap-4">
+      <header className="border-b border-border/50 bg-background/80 backdrop-blur-xl sticky top-0 z-40">
+        <div className="container mx-auto px-6 h-14 flex items-center gap-4">
           <button onClick={() => navigate("/dashboard")} className="text-muted-foreground hover:text-foreground transition-colors">
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h1 className="font-heading text-lg font-bold">Tienda</h1>
+          <h1 className="font-heading text-base font-bold">Planes y Precios</h1>
         </div>
       </header>
 
-      <main className="container mx-auto px-6 py-8 space-y-8">
-        {periodGroups.map((group, gi) => (
-          <motion.section
-            key={group.label}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: gi * 0.1 }}
-          >
-            <h2 className="font-heading text-base font-semibold mb-4 text-muted-foreground uppercase tracking-wider text-xs">
-              {group.label}
-            </h2>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {group.plans.map((plan, i) => (
-                <motion.div
-                  key={plan.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: gi * 0.1 + i * 0.05 }}
-                  className={`glass rounded-xl p-5 glass-hover relative ${plan.highlight ? "ring-1 ring-primary/40" : ""}`}
-                >
-                  {plan.badge && (
-                    <span className="absolute top-3 right-3 text-[10px] font-semibold bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                      {plan.badge}
-                    </span>
-                  )}
-                  {plan.highlight && (
-                    <span className="absolute top-3 right-3 text-[10px] font-semibold bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                      Popular
-                    </span>
-                  )}
-                  <h3 className="font-heading text-sm font-semibold mb-1">{plan.name}</h3>
-                  <p className="text-xs text-muted-foreground mb-3">{plan.frequency}</p>
-                  <div className="flex items-end justify-between">
-                    <div>
-                      <span className="text-xl font-bold font-heading">${plan.price}</span>
-                      <span className="text-xs text-muted-foreground ml-1">/ {plan.period}</span>
-                    </div>
-                    <Button variant="default" size="sm" className="text-xs">
-                      Contratar
-                    </Button>
+      <main className="container mx-auto px-6 py-8 space-y-10">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center"
+        >
+          <h2 className="font-heading text-3xl md:text-4xl font-bold mb-2">
+            Elegí tu <span className="text-gradient">Plan</span>
+          </h2>
+          <p className="text-muted-foreground text-sm max-w-md mx-auto">
+            Invertí en tu disciplina. Cada plan incluye acceso completo a las clases de calistenia.
+          </p>
+        </motion.div>
+
+        {/* Plan Cards */}
+        <div className="grid md:grid-cols-3 gap-5">
+          {plans.map((plan, i) => (
+            <motion.div
+              key={plan.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.1 }}
+              className={`relative rounded-xl border ${plan.borderColor} bg-gradient-to-b ${plan.color} p-6 flex flex-col`}
+            >
+              {plan.popular && (
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-primary text-primary-foreground">
+                  Más Popular
+                </span>
+              )}
+              <div className="flex items-center gap-3 mb-4">
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                  plan.id === "estoico" ? "bg-amber-500/20" : plan.id === "guerrero" ? "bg-primary/20" : "bg-secondary"
+                }`}>
+                  <plan.icon className={`w-5 h-5 ${
+                    plan.id === "estoico" ? "text-amber-400" : plan.id === "guerrero" ? "text-primary" : "text-muted-foreground"
+                  }`} />
+                </div>
+                <h3 className="font-heading text-lg font-bold">{plan.name}</h3>
+              </div>
+              <p className="text-xs text-muted-foreground mb-5">{plan.description}</p>
+
+              <div className="space-y-3 flex-1">
+                {plan.prices.map((p) => (
+                  <div key={p.label} className="flex justify-between items-baseline gap-2 py-2 border-b border-border/30 last:border-0">
+                    <span className="text-xs text-muted-foreground">{p.label}</span>
+                    <span className="text-sm font-heading font-bold whitespace-nowrap">{p.price}</span>
                   </div>
-                </motion.div>
-              ))}
+                ))}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Planes Estudiante + Clase Suelta */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="glass rounded-xl p-6"
+        >
+          <h3 className="font-heading text-sm font-semibold mb-4 text-primary">Planes Estudiante & Clase Suelta</h3>
+          <div className="space-y-2">
+            {studentPlans.map((p) => (
+              <div key={p.label} className="flex justify-between items-center py-2 border-b border-border/30">
+                <span className="text-sm text-muted-foreground">{p.label}</span>
+                <span className="text-sm font-heading font-bold">{p.price}</span>
+              </div>
+            ))}
+            <div className="flex justify-between items-center py-2">
+              <span className="text-sm text-muted-foreground">Clase Suelta</span>
+              <span className="text-sm font-heading font-bold">$10.000</span>
             </div>
-          </motion.section>
-        ))}
+          </div>
+        </motion.div>
+
+        {/* Transferencia Bancaria */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="glass rounded-xl p-6"
+        >
+          <div className="flex items-center gap-2 mb-5">
+            <Banknote className="w-5 h-5 text-primary" />
+            <h3 className="font-heading text-sm font-semibold">Datos de Transferencia Bancaria</h3>
+          </div>
+
+          <div className="space-y-3">
+            {[
+              { label: "Banco", value: bankInfo.banco },
+              { label: "Tipo de Cuenta", value: bankInfo.tipoCuenta },
+              { label: "N° de Cuenta", value: bankInfo.numeroCuenta },
+              { label: "RUT", value: bankInfo.rut },
+              { label: "Titular", value: bankInfo.titular },
+            ].map((item) => (
+              <div key={item.label} className="flex items-center justify-between bg-secondary/50 rounded-lg px-4 py-3">
+                <div>
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">{item.label}</p>
+                  <p className="text-sm font-medium">{item.value}</p>
+                </div>
+                <button
+                  onClick={() => copyToClipboard(item.value, item.label)}
+                  className="relative text-muted-foreground hover:text-primary transition-colors"
+                  title="Copiar"
+                >
+                  <Copy className="w-4 h-4" />
+                  {copiedField === item.label && (
+                    <span className="absolute -top-5 right-0 text-[10px] text-primary whitespace-nowrap">¡Copiado!</span>
+                  )}
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {/* WhatsApp CTA */}
+          <a
+            href={whatsappLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-6 w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-500 text-white font-heading font-bold py-3.5 rounded-xl transition-colors text-sm"
+          >
+            <MessageCircle className="w-5 h-5" />
+            Enviar comprobante por WhatsApp
+          </a>
+        </motion.div>
       </main>
     </div>
   );
