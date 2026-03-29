@@ -10,6 +10,8 @@ import Dashboard from "./pages/Dashboard";
 import Booking from "./pages/Booking";
 import Store from "./pages/Store";
 import Admin from "./pages/Admin";
+import Profile from "./pages/Profile";
+import Routines from "./pages/Routines";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +30,8 @@ const App = () => (
           <Route path="/booking" element={<Booking />} />
           <Route path="/store" element={<Store />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/routines" element={<Routines />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

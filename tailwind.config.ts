@@ -7,14 +7,14 @@ export default {
   theme: {
     container: {
       center: true,
-      padding: "2rem",
+      padding: "1rem",
       screens: {
         "2xl": "1400px",
       },
     },
     extend: {
       fontFamily: {
-        heading: ['"Space Grotesk"', 'sans-serif'],
+        heading: ['"Oswald"', '"Space Grotesk"', 'sans-serif'],
         body: ['Inter', 'sans-serif'],
       },
       colors: {
@@ -55,7 +55,11 @@ export default {
         "surface-hover": "hsl(var(--surface-hover))",
         success: "hsl(var(--success))",
         warning: "hsl(var(--warning))",
-        lime: "hsl(var(--lime))",
+        gold: "hsl(var(--gold))",
+        "gold-light": "hsl(var(--gold-light))",
+        "gold-muted": "hsl(var(--gold-muted))",
+        cyan: "hsl(var(--cyan))",
+        "cyan-glow": "hsl(var(--cyan-glow))",
         blue: "hsl(var(--blue))",
         "blue-dark": "hsl(var(--blue-dark))",
         sidebar: {
@@ -92,8 +96,12 @@ export default {
           to: { opacity: "1", transform: "translateX(0)" },
         },
         "pulse-glow": {
-          "0%, 100%": { boxShadow: "0 0 20px -5px hsl(199, 89%, 48%, 0.2)" },
-          "50%": { boxShadow: "0 0 40px -5px hsl(199, 89%, 48%, 0.4)" },
+          "0%, 100%": { boxShadow: "0 0 20px -5px hsl(190, 95%, 50%, 0.2)" },
+          "50%": { boxShadow: "0 0 40px -5px hsl(190, 95%, 50%, 0.4)" },
+        },
+        "pulse-gold": {
+          "0%, 100%": { boxShadow: "0 0 15px -5px hsl(40, 50%, 45%, 0.2)" },
+          "50%": { boxShadow: "0 0 30px -5px hsl(40, 50%, 45%, 0.3)" },
         },
       },
       animation: {
@@ -102,6 +110,7 @@ export default {
         "fade-in": "fade-in 0.6s ease-out forwards",
         "slide-in-right": "slide-in-right 0.5s ease-out forwards",
         "pulse-glow": "pulse-glow 3s ease-in-out infinite",
+        "pulse-gold": "pulse-gold 3s ease-in-out infinite",
       },
     },
   },
