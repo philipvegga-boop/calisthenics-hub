@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,51 +6,55 @@
 
 @layer base {
   :root {
-    --background: 240 10% 4%;
+    --background: 220 20% 4%;
     --foreground: 0 0% 95%;
 
-    --card: 240 6% 8%;
+    --card: 220 15% 7%;
     --card-foreground: 0 0% 95%;
 
-    --popover: 240 6% 8%;
+    --popover: 220 15% 7%;
     --popover-foreground: 0 0% 95%;
 
-    --primary: 199 89% 48%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 190 95% 50%;
+    --primary-foreground: 220 20% 4%;
 
-    --secondary: 240 4% 14%;
+    --secondary: 220 12% 12%;
     --secondary-foreground: 0 0% 85%;
 
-    --muted: 240 4% 14%;
-    --muted-foreground: 240 5% 55%;
+    --muted: 220 12% 14%;
+    --muted-foreground: 220 10% 50%;
 
-    --accent: 199 89% 48%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 190 95% 50%;
+    --accent-foreground: 220 20% 4%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 4% 16%;
-    --input: 240 4% 16%;
-    --ring: 199 89% 48%;
+    --border: 220 12% 14%;
+    --input: 220 12% 14%;
+    --ring: 190 95% 50%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 240 6% 6%;
+    --sidebar-background: 220 15% 5%;
     --sidebar-foreground: 0 0% 85%;
-    --sidebar-primary: 199 89% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 4% 12%;
+    --sidebar-primary: 190 95% 50%;
+    --sidebar-primary-foreground: 220 20% 4%;
+    --sidebar-accent: 220 12% 10%;
     --sidebar-accent-foreground: 0 0% 85%;
-    --sidebar-border: 240 4% 16%;
-    --sidebar-ring: 199 89% 48%;
+    --sidebar-border: 220 12% 14%;
+    --sidebar-ring: 190 95% 50%;
 
     /* Custom tokens */
-    --surface: 240 6% 10%;
-    --surface-hover: 240 6% 13%;
+    --surface: 220 15% 9%;
+    --surface-hover: 220 15% 12%;
     --success: 142 76% 36%;
     --warning: 38 92% 50%;
-    --lime: 199 89% 48%;
+    --gold: 40 50% 45%;
+    --gold-light: 42 60% 55%;
+    --gold-muted: 38 35% 30%;
+    --cyan: 190 95% 50%;
+    --cyan-glow: 190 100% 60%;
     --blue: 217 91% 60%;
     --blue-dark: 222 47% 11%;
   }
@@ -79,20 +83,93 @@
     @apply hover:bg-card/80 hover:border-border transition-all duration-300;
   }
 
-  .gradient-lime {
-    background: linear-gradient(135deg, hsl(199, 89%, 48%) 0%, hsl(210, 80%, 35%) 100%);
+  .card-warrior {
+    background: linear-gradient(145deg, hsl(220, 15%, 8%) 0%, hsl(220, 20%, 5%) 100%);
+    border: 1px solid hsl(40, 50%, 45%, 0.2);
+    box-shadow: 0 0 30px -10px hsl(40, 50%, 45%, 0.1), inset 0 1px 0 hsl(40, 60%, 55%, 0.05);
+  }
+
+  .card-fifa {
+    background: linear-gradient(160deg, hsl(220, 20%, 10%) 0%, hsl(220, 25%, 6%) 60%, hsl(40, 30%, 10%) 100%);
+    border: 1px solid hsl(40, 50%, 45%, 0.25);
+    box-shadow: 0 4px 30px -5px hsl(40, 50%, 45%, 0.08);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-fifa::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, hsl(40, 60%, 55%, 0.4), transparent);
+  }
+
+  .card-cyan {
+    background: linear-gradient(145deg, hsl(220, 15%, 8%) 0%, hsl(200, 20%, 6%) 100%);
+    border: 1px solid hsl(190, 95%, 50%, 0.2);
+    box-shadow: 0 0 30px -10px hsl(190, 95%, 50%, 0.1);
+  }
+
+  .gradient-cyan {
+    background: linear-gradient(135deg, hsl(190, 95%, 50%) 0%, hsl(200, 90%, 40%) 100%);
+  }
+
+  .gradient-gold {
+    background: linear-gradient(135deg, hsl(40, 50%, 45%) 0%, hsl(42, 60%, 55%) 100%);
   }
 
   .gradient-dark {
-    background: linear-gradient(180deg, hsl(240, 6%, 10%) 0%, hsl(240, 10%, 4%) 100%);
+    background: linear-gradient(180deg, hsl(220, 15%, 9%) 0%, hsl(220, 20%, 4%) 100%);
   }
 
   .text-gradient {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(199, 89%, 48%) 0%, hsl(190, 95%, 65%) 100%);
+    background-image: linear-gradient(135deg, hsl(190, 95%, 50%) 0%, hsl(190, 100%, 70%) 100%);
   }
 
-  .glow-lime {
-    box-shadow: 0 0 40px -10px hsl(199, 89%, 48%, 0.3);
+  .text-gradient-gold {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(40, 50%, 45%) 0%, hsl(42, 65%, 60%) 100%);
+  }
+
+  .glow-cyan {
+    box-shadow: 0 0 40px -10px hsl(190, 95%, 50%, 0.3);
+  }
+
+  .glow-gold {
+    box-shadow: 0 0 40px -10px hsl(40, 50%, 45%, 0.3);
+  }
+
+  .border-gold {
+    border-color: hsl(40, 50%, 45%, 0.3);
+  }
+
+  .border-gold-strong {
+    border-color: hsl(40, 50%, 45%, 0.5);
+  }
+
+  .border-cyan {
+    border-color: hsl(190, 95%, 50%, 0.3);
+  }
+
+  /* FIFA card diagonal pattern */
+  .fifa-pattern {
+    position: relative;
+  }
+  .fifa-pattern::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 10px,
+      hsl(40, 50%, 45%, 0.02) 10px,
+      hsl(40, 50%, 45%, 0.02) 20px
+    );
+    pointer-events: none;
   }
 }
