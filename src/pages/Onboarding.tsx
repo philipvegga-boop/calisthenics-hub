@@ -103,7 +103,7 @@ const Onboarding = () => {
           </div>
           <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
             <motion.div
-              className="h-full gradient-lime rounded-full"
+              className="h-full gradient-cyan rounded-full"
               animate={{ width: `${progress}%` }}
               transition={{ duration: 0.4, ease: "easeOut" }}
             />

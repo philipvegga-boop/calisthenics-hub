@@ -17,14 +17,9 @@ const Landing = () => {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/20">
         <div className="container mx-auto px-4 h-14 flex items-center justify-between">
           <Logo size="md" />
-          <div className="flex gap-2">
-            <Button variant="ghost" size="sm" className="text-xs" onClick={() => navigate("/login")}>
-              Acceso VIP
-            </Button>
-            <Button size="sm" className="text-xs gradient-cyan text-primary-foreground font-bold" onClick={() => navigate("/login")}>
-              Unirme
-            </Button>
-          </div>
+          <Button size="sm" className="text-xs gradient-cyan text-primary-foreground font-bold" onClick={() => navigate("/login")}>
+            Unirme
+          </Button>
         </div>
       </nav>
 
@@ -63,7 +58,7 @@ const Landing = () => {
 
             <h1 className="font-heading text-4xl md:text-6xl font-bold leading-none mb-3 uppercase tracking-wider">
               <span className="text-gradient">PODER</span>
-              <span className="text-gradient-gold">ESTOICO</span>
+              <span className="text-gradient">ESTOICO</span>
             </h1>
 
             <div className="w-20 h-[1px] mx-auto my-4 bg-gradient-to-r from-transparent via-gold-light to-transparent" />
@@ -79,14 +74,6 @@ const Landing = () => {
                 onClick={() => navigate("/login")}
               >
                 Unirme a la Academia
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-gold-strong text-gold-light hover:bg-gold/10 font-heading uppercase tracking-wide text-sm"
-                onClick={() => navigate("/login")}
-              >
-                Acceso Alumnos VIP
               </Button>
             </div>
           </motion.div>

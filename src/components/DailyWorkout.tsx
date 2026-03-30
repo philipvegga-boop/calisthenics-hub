@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Flame, Target, Dumbbell, Zap, Heart } from "lucide-react";
+import { Flame, Dumbbell, Zap, Heart } from "lucide-react";
 
 interface WorkoutBlock {
   icon: React.ElementType;
@@ -21,24 +21,15 @@ const workoutBlocks: WorkoutBlock[] = [
     ],
   },
   {
-    icon: Target,
-    title: "Trabajo Técnico (Skills)",
-    color: "text-primary",
-    exercises: [
-      { name: "Front Lever Tuck Hold", detail: "5x8s — Desc 2min" },
-      { name: "Planche Lean", detail: "5x15s — Desc 90s" },
-      { name: "L-Sit en paralelas", detail: "4x10s — Desc 90s" },
-    ],
-  },
-  {
     icon: Dumbbell,
-    title: "Bloque de Fuerza",
-    color: "text-cyan",
+    title: "Rutina de Entrenamiento",
+    color: "text-primary",
     exercises: [
       { name: "Dominadas lastradas", detail: "4x6 @ +10kg" },
       { name: "Dips en anillas", detail: "4x8" },
       { name: "Pike push-ups elevados", detail: "3x10" },
       { name: "Front lever rows (tuck)", detail: "3x8" },
+      { name: "L-Sit en paralelas", detail: "4x10s" },
     ],
   },
   {
@@ -63,7 +54,7 @@ const DailyWorkout = () => {
     >
       <div className="flex items-center justify-between mb-3">
         <h2 className="font-heading text-sm font-bold uppercase tracking-wider">Rutina del Día</h2>
-        <span className="text-[10px] text-muted-foreground font-heading uppercase">Lunes — Fuerza + Skills</span>
+        <span className="text-[10px] text-muted-foreground font-heading uppercase">Lunes — Entrenamiento</span>
       </div>
 
       <div className="space-y-3">
@@ -95,7 +86,7 @@ const DailyWorkout = () => {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.8 }}
+        transition={{ delay: 0.7 }}
         className="mt-4 card-warrior rounded-xl p-4 flex items-start gap-3"
       >
         <div className="w-9 h-9 rounded-full gradient-gold flex items-center justify-center flex-shrink-0">
