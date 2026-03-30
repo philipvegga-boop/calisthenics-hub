@@ -80,14 +80,6 @@ const Landing = () => {
               >
                 Unirme a la Academia
               </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-gold-strong text-gold-light hover:bg-gold/10 font-heading uppercase tracking-wide text-sm"
-                onClick={() => navigate("/login")}
-              >
-                Acceso Alumnos VIP
-              </Button>
             </div>
           </motion.div>
         </div>
