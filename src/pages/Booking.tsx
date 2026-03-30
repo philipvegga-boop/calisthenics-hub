@@ -15,7 +15,7 @@ const dates = [
 ];
 
 interface ClassSlot {
-  id: number;
+  id: string;
   name: string;
   time: string;
   duration: string;
@@ -25,35 +25,31 @@ interface ClassSlot {
   booked?: boolean;
 }
 
-const classesData: Record<number, ClassSlot[]> = {
-  28: [
-    { id: 1, name: "Calistenia General", time: "09:00", duration: "1h", instructor: "Coach Martín", spots: 8, maxSpots: 12 },
-    { id: 2, name: "Skills Intermedio", time: "10:30", duration: "1h 15min", instructor: "Coach Martín", spots: 2, maxSpots: 8 },
-    { id: 3, name: "Calistenia General", time: "18:00", duration: "1h", instructor: "Coach Martín", spots: 3, maxSpots: 12 },
-    { id: 4, name: "Skills Avanzado", time: "19:30", duration: "1h 15min", instructor: "Coach Martín", spots: 5, maxSpots: 8 },
-  ],
-  29: [
-    { id: 5, name: "Calistenia General", time: "09:00", duration: "1h", instructor: "Coach Martín", spots: 10, maxSpots: 12 },
-    { id: 6, name: "Calistenia General", time: "18:00", duration: "1h", instructor: "Coach Martín", spots: 6, maxSpots: 12 },
-    { id: 7, name: "Skills Intermedio", time: "19:30", duration: "1h 15min", instructor: "Coach Martín", spots: 4, maxSpots: 8, booked: true },
-  ],
-  30: [
-    { id: 8, name: "Calistenia General", time: "09:00", duration: "1h", instructor: "Coach Martín", spots: 11, maxSpots: 12 },
-    { id: 9, name: "Skills Avanzado", time: "18:00", duration: "1h 15min", instructor: "Coach Martín", spots: 7, maxSpots: 8 },
-  ],
-  31: [
-    { id: 10, name: "Calistenia General", time: "09:00", duration: "1h", instructor: "Coach Martín", spots: 9, maxSpots: 12 },
-    { id: 11, name: "Calistenia General", time: "18:00", duration: "1h", instructor: "Coach Martín", spots: 4, maxSpots: 12 },
-    { id: 12, name: "Skills Intermedio", time: "19:30", duration: "1h 15min", instructor: "Coach Martín", spots: 6, maxSpots: 8 },
-  ],
-  1: [
-    { id: 13, name: "Calistenia General", time: "09:00", duration: "1h", instructor: "Coach Martín", spots: 12, maxSpots: 12 },
-    { id: 14, name: "Open Gym", time: "17:00", duration: "2h", instructor: "Libre", spots: 15, maxSpots: 20 },
-  ],
-  2: [
-    { id: 15, name: "Taller de Handstand", time: "10:00", duration: "1h 30min", instructor: "Coach Martín", spots: 5, maxSpots: 6 },
-  ],
+const timeSlots = [
+  { time: "09:00", label: "Mañana" },
+  { time: "18:00", label: "Tarde" },
+  { time: "19:00", label: "Tarde" },
+  { time: "20:00", label: "Noche" },
+];
+
+// Generate classes for each date - all "Calistenia", 20 spots
+const generateClasses = (dateNum: number): ClassSlot[] => {
+  return timeSlots.map((slot, i) => ({
+    id: `${dateNum}-${i}`,
+    name: "Calistenia",
+    time: slot.time,
+    duration: "1h",
+    instructor: "Coach Martín",
+    spots: Math.floor(Math.random() * 15) + 5, // 5-19 random spots taken simulation
+    maxSpots: 20,
+    booked: dateNum === 29 && slot.time === "18:00", // example booked
+  }));
 };
+
+const classesData: Record<number, ClassSlot[]> = {};
+dates.forEach((d) => {
+  classesData[d.date] = generateClasses(d.date);
+});
 
 const Booking = () => {
   const navigate = useNavigate();
@@ -63,7 +59,7 @@ const Booking = () => {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border glass sticky top-0 z-40">
-        <div className="container mx-auto px-6 h-16 flex items-center gap-4">
+        <div className="container mx-auto px-4 h-14 flex items-center gap-4">
           <button onClick={() => navigate("/dashboard")} className="text-muted-foreground hover:text-foreground transition-colors">
             <ArrowLeft className="w-5 h-5" />
           </button>
@@ -71,65 +67,65 @@ const Booking = () => {
         </div>
       </header>
 
-      <main className="container mx-auto px-6 py-8 space-y-6">
+      <main className="container mx-auto px-4 py-6 space-y-5 max-w-lg">
         {/* Date Selector */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex gap-3 overflow-x-auto pb-2"
+          className="flex gap-2 overflow-x-auto pb-2"
         >
           {dates.map((d) => (
             <button
               key={d.date}
               onClick={() => setSelectedDate(d.date)}
-              className={`flex-shrink-0 w-16 py-3 rounded-xl text-center transition-all duration-200 border ${
+              className={`flex-shrink-0 w-14 py-3 rounded-xl text-center transition-all duration-200 border ${
                 selectedDate === d.date
                   ? "bg-primary/10 border-primary/50"
                   : "glass border-border hover:border-border/80"
               }`}
             >
-              <p className="text-xs text-muted-foreground">{d.day}</p>
+              <p className="text-[10px] text-muted-foreground">{d.day}</p>
               <p className={`text-lg font-bold font-heading ${selectedDate === d.date ? "text-primary" : ""}`}>{d.date}</p>
-              <p className="text-[10px] text-muted-foreground">{d.month}</p>
+              <p className="text-[9px] text-muted-foreground">{d.month}</p>
             </button>
           ))}
         </motion.div>
 
         {/* Classes */}
-        <div className="space-y-3">
+        <div className="space-y-2.5">
           {classes.map((cls, i) => (
             <motion.div
               key={cls.id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
-              className={`glass rounded-xl p-5 glass-hover ${cls.booked ? "ring-1 ring-primary/30" : ""}`}
+              className={`card-fifa rounded-xl p-4 fifa-pattern ${cls.booked ? "ring-1 ring-primary/30" : ""}`}
             >
-              <div className="flex items-start justify-between">
-                <div className="space-y-2">
+              <div className="flex items-center justify-between relative z-10">
+                <div className="space-y-1.5">
                   <div className="flex items-center gap-2">
-                    <h3 className="font-heading text-sm font-semibold">{cls.name}</h3>
+                    <h3 className="font-heading text-sm font-bold uppercase tracking-wide">{cls.name}</h3>
                     {cls.booked && (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                      <span className="inline-flex items-center gap-1 text-[9px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
                         <Check className="w-3 h-3" /> Reservado
                       </span>
                     )}
                   </div>
-                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
                     <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {cls.time} · {cls.duration}</span>
                     <span className="flex items-center gap-1"><Users className="w-3 h-3" /> {cls.instructor}</span>
                   </div>
                 </div>
                 <div className="flex flex-col items-end gap-2">
-                  <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                    cls.spots <= 3 ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary"
+                  <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${
+                    cls.maxSpots - cls.spots <= 5 ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary"
                   }`}>
-                    {cls.spots}/{cls.maxSpots} cupos
+                    {cls.spots}/{cls.maxSpots}
                   </span>
                   {cls.booked ? (
-                    <Button variant="outline" size="sm" className="text-xs">Cancelar</Button>
+                    <Button variant="outline" size="sm" className="text-[10px] h-7 px-3">Cancelar</Button>
                   ) : (
-                    <Button variant="default" size="sm" className="text-xs">Reservar</Button>
+                    <Button size="sm" className="gradient-cyan text-primary-foreground text-[10px] h-7 px-3 font-heading font-bold uppercase">Reservar</Button>
                   )}
                 </div>
               </div>

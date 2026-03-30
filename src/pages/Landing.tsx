@@ -17,14 +17,9 @@ const Landing = () => {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/20">
         <div className="container mx-auto px-4 h-14 flex items-center justify-between">
           <Logo size="md" />
-          <div className="flex gap-2">
-            <Button variant="ghost" size="sm" className="text-xs" onClick={() => navigate("/login")}>
-              Acceso VIP
-            </Button>
-            <Button size="sm" className="text-xs gradient-cyan text-primary-foreground font-bold" onClick={() => navigate("/login")}>
-              Unirme
-            </Button>
-          </div>
+          <Button size="sm" className="text-xs gradient-cyan text-primary-foreground font-bold" onClick={() => navigate("/login")}>
+            Unirme
+          </Button>
         </div>
       </nav>
 
