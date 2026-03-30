@@ -63,7 +63,7 @@ const Landing = () => {
 
             <h1 className="font-heading text-4xl md:text-6xl font-bold leading-none mb-3 uppercase tracking-wider">
               <span className="text-gradient">PODER</span>
-              <span className="text-gradient-gold">ESTOICO</span>
+              <span className="text-gradient">ESTOICO</span>
             </h1>
 
             <div className="w-20 h-[1px] mx-auto my-4 bg-gradient-to-r from-transparent via-gold-light to-transparent" />
