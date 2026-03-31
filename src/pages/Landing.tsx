@@ -36,8 +36,7 @@ const Landing = () => {
           />
           <div className="absolute inset-0 bg-black/75" />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-background/50" />
-          {/* Gold accent line */}
-          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-gold to-transparent opacity-40" />
+          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary to-transparent opacity-40" />
         </div>
 
         <div className="container mx-auto px-4 relative z-10">
@@ -61,7 +60,7 @@ const Landing = () => {
               <span className="text-gradient">ESTOICO</span>
             </h1>
 
-            <div className="w-20 h-[1px] mx-auto my-4 bg-gradient-to-r from-transparent via-gold-light to-transparent" />
+            <div className="w-20 h-[1px] mx-auto my-4 bg-gradient-to-r from-transparent via-primary to-transparent" />
 
             <p className="text-sm md:text-base text-muted-foreground mb-6 leading-relaxed px-4">
               Fusionamos la disciplina de la Calistenia Presencial con la Inteligencia de datos para forjar guerreros. Transforma tu cuerpo y domina tu mente.
@@ -84,7 +83,7 @@ const Landing = () => {
           animate={{ y: [0, 8, 0] }}
           transition={{ duration: 2, repeat: Infinity }}
         >
-          <ChevronDown className="w-5 h-5 text-gold/50" />
+          <ChevronDown className="w-5 h-5 text-primary/50" />
         </motion.div>
       </section>
 

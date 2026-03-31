@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ChevronRight, Swords, Dumbbell, Hand, Shield } from "lucide-react";
+import { ChevronRight, Swords, Dumbbell, Hand, Shield, Zap } from "lucide-react";
 
 interface AssessmentQuestion {
   id: string;
@@ -51,6 +51,19 @@ const questions: AssessmentQuestion[] = [
       { label: "Human Flag / V-Sit", value: 10 },
     ],
   },
+  {
+    id: "flexibility",
+    label: "Flexibilidad",
+    icon: Zap,
+    question: "¿Cómo está tu flexibilidad?",
+    options: [
+      { label: "No toco las puntas de los pies", value: 2 },
+      { label: "Toco las puntas con esfuerzo", value: 4 },
+      { label: "Palmas al piso con piernas rectas", value: 6 },
+      { label: "Pike/pancake con pecho al piso", value: 8 },
+      { label: "Splits completo / movilidad élite", value: 10 },
+    ],
+  },
 ];
 
 const levelTitles: Record<number, string> = {
@@ -67,7 +80,7 @@ const levelTitles: Record<number, string> = {
 };
 
 const SelfAssessment = () => {
-  const [currentStep, setCurrentStep] = useState(-1); // -1 = not started
+  const [currentStep, setCurrentStep] = useState(-1);
   const [scores, setScores] = useState<Record<string, number>>({});
   const [showResults, setShowResults] = useState(false);
 
@@ -100,7 +113,6 @@ const SelfAssessment = () => {
 
   const weakestLabel = questions.find((q) => q.id === weakestPillar)?.label || "";
 
-  // Results view with pillar bars
   if (showResults) {
     return (
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
@@ -119,7 +131,7 @@ const SelfAssessment = () => {
             <p className="text-[9px] text-muted-foreground uppercase tracking-widest mb-2">Tu Nivel</p>
             <div className="text-5xl font-heading font-bold text-gradient mb-1">{globalScore}</div>
             <div className="text-[10px] text-muted-foreground mb-3">/10</div>
-            <h3 className="font-heading text-lg font-bold uppercase tracking-widest text-gradient-gold">
+            <h3 className="font-heading text-lg font-bold uppercase tracking-widest text-gradient">
               {levelTitles[globalScore] || "Recluta"}
             </h3>
             <p className="text-xs text-muted-foreground mt-1">Nivel {globalScore}: {levelTitles[globalScore] || "Recluta"}</p>
@@ -128,10 +140,10 @@ const SelfAssessment = () => {
 
         {/* Pillar Strength Bars */}
         <div className="card-warrior rounded-xl p-5">
-          <h3 className="font-heading text-xs font-bold uppercase tracking-widest text-gold-light text-center mb-5">
+          <h3 className="font-heading text-xs font-bold uppercase tracking-widest text-primary text-center mb-5">
             Pilares de Fuerza
           </h3>
-          <div className="flex items-end justify-center gap-6 h-48">
+          <div className="flex items-end justify-center gap-4 h-48">
             {questions.map((q, i) => {
               const score = scores[q.id] || 0;
               const heightPercent = (score / 10) * 100;
@@ -139,14 +151,15 @@ const SelfAssessment = () => {
               const colors = [
                 { bar: "from-cyan to-primary", glow: "shadow-[0_0_20px_hsl(190,95%,50%,0.3)]" },
                 { bar: "from-primary to-blue-500", glow: "shadow-[0_0_20px_hsl(217,91%,60%,0.3)]" },
-                { bar: "from-gold to-gold-light", glow: "shadow-[0_0_20px_hsl(40,50%,45%,0.3)]" },
+                { bar: "from-blue-400 to-primary", glow: "shadow-[0_0_20px_hsl(190,95%,50%,0.3)]" },
+                { bar: "from-primary to-cyan", glow: "shadow-[0_0_20px_hsl(190,100%,60%,0.3)]" },
               ];
               const color = colors[i % colors.length];
 
               return (
                 <div key={q.id} className="flex flex-col items-center gap-2">
                   <span className="text-xs font-heading font-bold text-foreground">{score}</span>
-                  <div className="w-14 h-40 rounded-t-lg bg-secondary/50 border border-border/30 relative overflow-hidden">
+                  <div className="w-12 h-40 rounded-t-lg bg-secondary/50 border border-border/30 relative overflow-hidden">
                     <motion.div
                       className={`absolute bottom-0 left-0 right-0 rounded-t-lg bg-gradient-to-t ${color.bar} ${color.glow}`}
                       initial={{ height: 0 }}
@@ -161,7 +174,7 @@ const SelfAssessment = () => {
                   </div>
                   <div className="text-center">
                     <q.icon className={`w-4 h-4 mx-auto mb-0.5 ${isWeakest ? "text-destructive" : "text-muted-foreground"}`} />
-                    <span className={`text-[9px] font-heading font-bold uppercase tracking-wider ${isWeakest ? "text-destructive" : "text-muted-foreground"}`}>
+                    <span className={`text-[8px] font-heading font-bold uppercase tracking-wider ${isWeakest ? "text-destructive" : "text-muted-foreground"}`}>
                       {q.id}
                     </span>
                   </div>
@@ -182,7 +195,6 @@ const SelfAssessment = () => {
     );
   }
 
-  // Question flow
   if (currentStep >= 0) {
     const currentQuestion = questions[currentStep];
     return (
@@ -196,7 +208,6 @@ const SelfAssessment = () => {
           </span>
         </div>
 
-        {/* Progress */}
         <div className="h-1 bg-secondary rounded-full overflow-hidden">
           <motion.div
             className="h-full gradient-cyan rounded-full"
@@ -214,8 +225,8 @@ const SelfAssessment = () => {
           >
             <div className="relative z-10">
               <div className="flex items-center gap-2 mb-4">
-                <currentQuestion.icon className="w-5 h-5 text-gold-light" />
-                <span className="text-[10px] font-heading font-bold uppercase tracking-widest text-gold-light">
+                <currentQuestion.icon className="w-5 h-5 text-primary" />
+                <span className="text-[10px] font-heading font-bold uppercase tracking-widest text-primary">
                   {currentQuestion.label}
                 </span>
               </div>
@@ -227,10 +238,10 @@ const SelfAssessment = () => {
                   <button
                     key={opt.label}
                     onClick={() => handleAnswer(currentQuestion.id, opt.value)}
-                    className="w-full text-left card-warrior rounded-lg p-3 group hover:border-gold-strong transition-all flex items-center justify-between"
+                    className="w-full text-left card-warrior rounded-lg p-3 group hover:border-primary/50 transition-all flex items-center justify-between"
                   >
                     <span className="text-xs font-medium">{opt.label}</span>
-                    <ChevronRight className="w-4 h-4 text-gold/50 group-hover:text-gold-light transition-colors" />
+                    <ChevronRight className="w-4 h-4 text-primary/50 group-hover:text-primary transition-colors" />
                   </button>
                 ))}
               </div>
@@ -241,7 +252,6 @@ const SelfAssessment = () => {
     );
   }
 
-  // Start button
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
       <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-primary">
@@ -249,15 +259,15 @@ const SelfAssessment = () => {
       </h2>
       <div className="card-fifa rounded-xl p-6 fifa-pattern text-center">
         <div className="relative z-10">
-          <Swords className="w-8 h-8 text-gold-light mx-auto mb-3" />
+          <Swords className="w-8 h-8 text-primary mx-auto mb-3" />
           <h3 className="font-heading text-base font-bold uppercase tracking-wide mb-2">
             ¿Cuál es tu nivel?
           </h3>
           <p className="text-xs text-muted-foreground mb-5 leading-relaxed">
-            3 preguntas rápidas para medir tu fuerza en Tirón, Empuje y Control.
+            4 preguntas rápidas para medir tu fuerza en Tirón, Empuje, Control y Flexibilidad.
           </p>
           <Button
-            className="gradient-gold text-primary-foreground font-heading font-bold uppercase tracking-wide"
+            className="gradient-cyan text-primary-foreground font-heading font-bold uppercase tracking-wide"
             onClick={handleStart}
           >
             <Swords className="w-4 h-4 mr-2" /> Medir mi Poder

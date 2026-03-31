@@ -37,8 +37,8 @@ const plans = [
     name: "Plan Estoico",
     icon: Crown,
     description: "El compromiso máximo. Disciplina total, resultados garantizados",
-    color: "from-amber-500/20 to-amber-500/5",
-    borderColor: "border-amber-500/40",
+    color: "from-primary/15 to-blue/10",
+    borderColor: "border-primary/40",
     prices: [
       { label: "Semestral — 2 clases/semana", price: "$191.990", period: "/6 meses" },
       { label: "Semestral — 3 clases/semana", price: "$220.990", period: "/6 meses" },
@@ -52,7 +52,6 @@ const studentPlans = [
   { label: "Mensual Estudiante — 3 clases/semana", price: "$40.500" },
 ];
 
-// ← Editá estos datos con los tuyos reales
 const bankInfo = {
   banco: "Banco Estado",
   tipoCuenta: "Cuenta Vista / RUT",
@@ -61,7 +60,7 @@ const bankInfo = {
   titular: "Nombre del Titular",
 };
 
-const whatsappNumber = "56912345678"; // ← Cambiá por tu número real
+const whatsappNumber = "56912345678";
 
 const Store = () => {
   const navigate = useNavigate();
@@ -89,7 +88,6 @@ const Store = () => {
       </header>
 
       <main className="container mx-auto px-6 py-8 space-y-10">
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -103,7 +101,6 @@ const Store = () => {
           </p>
         </motion.div>
 
-        {/* Plan Cards */}
         <div className="grid md:grid-cols-3 gap-5">
           {plans.map((plan, i) => (
             <motion.div
@@ -120,10 +117,10 @@ const Store = () => {
               )}
               <div className="flex items-center gap-3 mb-4">
                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                  plan.id === "estoico" ? "bg-amber-500/20" : plan.id === "guerrero" ? "bg-primary/20" : "bg-secondary"
+                  plan.id === "estoico" ? "bg-primary/20" : plan.id === "guerrero" ? "bg-primary/20" : "bg-secondary"
                 }`}>
                   <plan.icon className={`w-5 h-5 ${
-                    plan.id === "estoico" ? "text-amber-400" : plan.id === "guerrero" ? "text-primary" : "text-muted-foreground"
+                    plan.id === "estoico" ? "text-primary" : plan.id === "guerrero" ? "text-primary" : "text-muted-foreground"
                   }`} />
                 </div>
                 <h3 className="font-heading text-lg font-bold">{plan.name}</h3>
@@ -142,7 +139,6 @@ const Store = () => {
           ))}
         </div>
 
-        {/* Planes Estudiante + Clase Suelta */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -164,7 +160,6 @@ const Store = () => {
           </div>
         </motion.div>
 
-        {/* Transferencia Bancaria */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -203,7 +198,6 @@ const Store = () => {
             ))}
           </div>
 
-          {/* WhatsApp CTA */}
           <a
             href={whatsappLink}
             target="_blank"

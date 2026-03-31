@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Flame, Dumbbell, Zap, Heart } from "lucide-react";
+import { Dumbbell, Zap, Heart } from "lucide-react";
 
 interface WorkoutBlock {
   icon: React.ElementType;
@@ -24,7 +24,7 @@ const workoutBlocks: WorkoutBlock[] = [
   {
     icon: Zap,
     title: "Accesorios",
-    color: "text-gold",
+    color: "text-primary",
     exercises: [
       { name: "Face pulls con banda", detail: "3x15" },
       { name: "Curl de bíceps en anillas", detail: "3x12" },
@@ -78,7 +78,7 @@ const DailyWorkout = () => {
         transition={{ delay: 0.7 }}
         className="mt-4 card-warrior rounded-xl p-4 flex items-start gap-3"
       >
-        <div className="w-9 h-9 rounded-full gradient-gold flex items-center justify-center flex-shrink-0">
+        <div className="w-9 h-9 rounded-full gradient-cyan flex items-center justify-center flex-shrink-0">
           <Heart className="w-4 h-4 text-primary-foreground" />
         </div>
         <div>
