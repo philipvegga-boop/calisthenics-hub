@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Flame, MapPin, Clock, User, AlertTriangle, CheckCircle, Edit3, Shield, Swords, Zap, Target, Trophy } from "lucide-react";
+import { ArrowLeft, Flame, MapPin, Clock, User, AlertTriangle, CheckCircle, Edit3, Shield, Swords, Zap, Target, Trophy, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -17,6 +17,18 @@ const Profile = () => {
   const [nationality, setNationality] = useState("🇨🇱 Chile");
   const [injuries, setInjuries] = useState("");
   const [confirmed, setConfirmed] = useState(false);
+  const [playerName, setPlayerName] = useState("Guerrero Estoico");
+  const [editingName, setEditingName] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setAvatarUrl(url);
+    }
+  };
 
   const bmi = weight && height ? (parseFloat(weight) / Math.pow(parseFloat(height) / 100, 2)).toFixed(1) : "—";
   const bmiCategory = parseFloat(bmi) < 18.5 ? "Bajo peso" : parseFloat(bmi) < 25 ? "Normal" : parseFloat(bmi) < 30 ? "Sobrepeso" : "Obesidad";
@@ -49,41 +61,68 @@ const Profile = () => {
           animate={{ opacity: 1, scale: 1 }}
           className="card-fifa rounded-2xl overflow-hidden fifa-pattern"
         >
-          {/* Card Top - Gold gradient header */}
-          <div className="relative bg-gradient-to-br from-gold/20 via-background to-gold-muted/10 p-5 pb-3">
+          {/* Card Top */}
+          <div className="relative bg-gradient-to-br from-primary/15 via-background to-cyan-muted/10 p-5 pb-3">
             <div className="relative z-10 flex items-start gap-4">
               {/* Rating */}
               <div className="flex flex-col items-center">
-                <span className="text-4xl font-heading font-bold text-gold-light leading-none">{overallRating}</span>
-                <span className="text-[8px] text-gold uppercase tracking-widest font-bold mt-0.5">OVR</span>
+                <span className="text-4xl font-heading font-bold text-primary leading-none">{overallRating}</span>
+                <span className="text-[8px] text-primary/70 uppercase tracking-widest font-bold mt-0.5">OVR</span>
               </div>
 
-              {/* Avatar */}
+              {/* Avatar with photo upload */}
               <div className="flex-1 flex justify-center">
-                <div className="w-20 h-20 rounded-full border-2 border-gold/50 bg-gradient-to-br from-secondary to-background flex items-center justify-center glow-gold">
-                  <User className="w-10 h-10 text-gold-light" />
-                </div>
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="relative w-20 h-20 rounded-full border-2 border-primary/50 bg-gradient-to-br from-secondary to-background flex items-center justify-center glow-cyan overflow-hidden group"
+                >
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                  ) : (
+                    <User className="w-10 h-10 text-primary/60" />
+                  )}
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <Camera className="w-5 h-5 text-white" />
+                  </div>
+                </button>
+                <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
               </div>
 
               {/* Streak */}
               <div className="flex flex-col items-center">
-                <Flame className="w-5 h-5 text-gold-light mb-0.5" />
-                <span className="text-2xl font-heading font-bold text-gold-light leading-none">{streak}</span>
-                <span className="text-[8px] text-gold uppercase tracking-widest font-bold mt-0.5">RACHA</span>
+                <Flame className="w-5 h-5 text-primary mb-0.5" />
+                <span className="text-2xl font-heading font-bold text-primary leading-none">{streak}</span>
+                <span className="text-[8px] text-primary/70 uppercase tracking-widest font-bold mt-0.5">RACHA</span>
               </div>
             </div>
 
-            {/* Player Name */}
+            {/* Player Name — editable */}
             <div className="text-center mt-3">
-              <h1 className="font-heading text-xl font-bold uppercase tracking-widest">Guerrero Estoico</h1>
-              <p className="text-[10px] text-gold uppercase tracking-[0.3em] font-bold">Poder Estoico · Santiago</p>
+              {editingName ? (
+                <Input
+                  value={playerName}
+                  onChange={(e) => setPlayerName(e.target.value)}
+                  onBlur={() => setEditingName(false)}
+                  onKeyDown={(e) => e.key === "Enter" && setEditingName(false)}
+                  autoFocus
+                  className="text-center font-heading text-xl font-bold uppercase tracking-widest bg-transparent border-primary/30 h-8"
+                />
+              ) : (
+                <button onClick={() => setEditingName(true)} className="group">
+                  <h1 className="font-heading text-xl font-bold uppercase tracking-widest group-hover:text-primary transition-colors">
+                    {playerName}
+                  </h1>
+                  <Edit3 className="w-3 h-3 text-muted-foreground mx-auto mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </button>
+              )}
+              <p className="text-[10px] text-primary/60 uppercase tracking-[0.3em] font-bold">Poder Estoico · Santiago</p>
             </div>
           </div>
 
           {/* Divider line */}
-          <div className="h-[1px] bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
+          <div className="h-[1px] bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
 
-          {/* Stats Grid - FIFA Style */}
+          {/* Stats Grid */}
           <div className="grid grid-cols-3 gap-0 divide-x divide-border/20 p-0">
             {stats.map((stat) => (
               <div key={stat.label} className="relative z-10 text-center py-3 px-2">
@@ -92,7 +131,6 @@ const Profile = () => {
                   <span className="text-xl font-heading font-bold">{stat.value}</span>
                 </div>
                 <span className="text-[9px] text-muted-foreground uppercase tracking-widest font-bold">{stat.label}</span>
-                {/* Mini bar */}
                 <div className="mt-1.5 mx-auto w-full max-w-[60px] h-1 bg-border/30 rounded-full overflow-hidden">
                   <motion.div
                     initial={{ width: 0 }}
@@ -106,12 +144,12 @@ const Profile = () => {
           </div>
 
           {/* Divider */}
-          <div className="h-[1px] bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
+          <div className="h-[1px] bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
 
-          {/* Position/Level */}
+          {/* Level */}
           <div className="relative z-10 text-center py-3">
-            <span className="text-[10px] text-gold-light font-heading font-bold uppercase tracking-[0.4em]">
-              ⚔️ Guerrero Avanzado · Nivel 7 ⚔️
+            <span className="text-[10px] text-primary font-heading font-bold uppercase tracking-[0.4em]">
+              ⚡ Guerrero Avanzado · Nivel 7 ⚡
             </span>
           </div>
         </motion.div>
@@ -121,12 +159,12 @@ const Profile = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="card-fifa rounded-xl p-5 fifa-pattern animate-pulse-gold"
+          className="card-fifa rounded-xl p-5 fifa-pattern animate-pulse-glow"
         >
           <div className="relative z-10">
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-2 h-2 rounded-full bg-gold-light animate-pulse" />
-              <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-gold-light">
+              <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+              <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-primary">
                 Tu Próxima Cita con el Hierro
               </h2>
             </div>
@@ -134,7 +172,7 @@ const Profile = () => {
             <div className="grid grid-cols-2 gap-3 mb-4">
               <div className="bg-background/30 rounded-lg p-3">
                 <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">Día</p>
-                <p className="text-sm font-heading font-bold">Lunes 30 Mar</p>
+                <p className="text-sm font-heading font-bold">Lunes 31 Mar</p>
               </div>
               <div className="bg-background/30 rounded-lg p-3">
                 <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">Hora</p>
@@ -159,7 +197,7 @@ const Profile = () => {
 
             <Button
               className={`w-full font-heading font-bold uppercase tracking-wide text-sm ${
-                confirmed ? "bg-success text-white" : "gradient-gold text-primary-foreground"
+                confirmed ? "bg-success text-white" : "gradient-cyan text-primary-foreground"
               }`}
               onClick={() => setConfirmed(!confirmed)}
             >
@@ -222,8 +260,8 @@ const Profile = () => {
           className="card-warrior rounded-xl p-5"
         >
           <div className="flex items-center gap-2 mb-3">
-            <AlertTriangle className="w-4 h-4 text-gold-light" />
-            <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-gold-light">
+            <AlertTriangle className="w-4 h-4 text-primary" />
+            <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-primary">
               Estado de Salud / Lesiones
             </h2>
           </div>

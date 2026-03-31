@@ -1,34 +1,20 @@
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Users, Calendar, Dumbbell, Plus, BarChart3, UserCheck, Search } from "lucide-react";
+import { ArrowLeft, Users, Calendar, Dumbbell, Plus, BarChart3, UserCheck, Search, Trash2, Clock } from "lucide-react";
 import Logo from "@/components/Logo";
+import { scheduleStore } from "@/lib/scheduleStore";
+import { toast } from "sonner";
 
 const tabs = [
   { id: "overview", label: "Resumen", icon: BarChart3 },
   { id: "users", label: "Usuarios", icon: UserCheck },
-  { id: "students", label: "Alumnos", icon: Users },
   { id: "schedule", label: "Horarios", icon: Calendar },
   { id: "workout", label: "Rutina", icon: Dumbbell },
-];
-
-const students = [
-  { id: 1, name: "Lucas García", level: "Intermedio", classes: 24, joined: "Ene 2026" },
-  { id: 2, name: "María López", level: "Principiante", classes: 8, joined: "Mar 2026" },
-  { id: 3, name: "Tomás Fernández", level: "Avanzado", classes: 67, joined: "Sep 2025" },
-  { id: 4, name: "Ana Martínez", level: "Intermedio", classes: 31, joined: "Nov 2025" },
-  { id: 5, name: "Diego Ruiz", level: "Principiante", classes: 3, joined: "Mar 2026" },
-];
-
-const todayClasses = [
-  { time: "09:00", name: "Calistenia Lunes", booked: 14, max: 20 },
-  { time: "10:30", name: "Calistenia Lunes", booked: 6, max: 20 },
-  { time: "18:00", name: "Calistenia Lunes", booked: 17, max: 20 },
-  { time: "19:30", name: "Calistenia Lunes", booked: 3, max: 20 },
 ];
 
 const initialUsers = [
@@ -45,6 +31,10 @@ const Admin = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const [users, setUsers] = useState(initialUsers);
   const [userSearch, setUserSearch] = useState("");
+  const [newTime, setNewTime] = useState("");
+  const [newEndTime, setNewEndTime] = useState("");
+
+  const slots = useSyncExternalStore(scheduleStore.subscribe, scheduleStore.getSlots);
 
   const toggleUserRole = (userId: string) => {
     setUsers(prev =>
@@ -61,6 +51,26 @@ const Admin = () => {
     u.email.toLowerCase().includes(userSearch.toLowerCase())
   );
 
+  const handleAddSlot = () => {
+    if (!newTime || !newEndTime) {
+      toast.error("Completá hora inicio y fin");
+      return;
+    }
+    if (slots.find(s => s.time === newTime)) {
+      toast.error("Ese horario ya existe");
+      return;
+    }
+    scheduleStore.addSlot({ time: newTime, endTime: newEndTime });
+    toast.success(`Horario ${newTime} - ${newEndTime} agregado`);
+    setNewTime("");
+    setNewEndTime("");
+  };
+
+  const handleRemoveSlot = (time: string) => {
+    scheduleStore.removeSlot(time);
+    toast("Horario eliminado");
+  };
+
   return (
     <div className="min-h-screen bg-background pb-8">
       <header className="border-b border-border/30 bg-background/80 backdrop-blur-xl sticky top-0 z-40">
@@ -69,7 +79,7 @@ const Admin = () => {
             <ArrowLeft className="w-5 h-5" />
           </button>
           <Logo size="sm" />
-          <span className="font-heading text-sm font-bold uppercase tracking-wider">Admin</span>
+          <span className="font-heading text-sm font-bold uppercase tracking-wider text-primary">Admin</span>
         </div>
       </header>
 
@@ -97,10 +107,10 @@ const Admin = () => {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
             <div className="grid grid-cols-2 gap-2">
               {[
-                { label: "Alumnos VIP", value: String(users.filter(u => u.role === "activo").length), icon: Users, color: "text-primary" },
-                { label: "Pendientes", value: String(users.filter(u => u.role === "pendiente").length), icon: UserCheck, color: "text-gold-light" },
-                { label: "Clases Hoy", value: "4", icon: Calendar, color: "text-primary" },
-                { label: "Reservas", value: "40", icon: BarChart3, color: "text-gold-light" },
+                { label: "Alumnos Activos", value: String(users.filter(u => u.role === "activo").length), icon: Users, color: "text-primary" },
+                { label: "Pendientes", value: String(users.filter(u => u.role === "pendiente").length), icon: UserCheck, color: "text-muted-foreground" },
+                { label: "Horarios", value: String(slots.length), icon: Calendar, color: "text-primary" },
+                { label: "Total Usuarios", value: String(users.length), icon: BarChart3, color: "text-primary" },
               ].map((stat) => (
                 <div key={stat.label} className="card-fifa rounded-xl p-4 fifa-pattern">
                   <div className="relative z-10">
@@ -113,20 +123,15 @@ const Admin = () => {
             </div>
 
             <div>
-              <h3 className="font-heading text-xs font-bold uppercase tracking-wider mb-2">Clases de Hoy</h3>
+              <h3 className="font-heading text-xs font-bold uppercase tracking-wider mb-2">Horarios Configurados</h3>
               <div className="space-y-1.5">
-                {todayClasses.map((cls) => (
-                  <div key={cls.time} className="card-fifa rounded-lg px-4 py-2.5 flex items-center justify-between fifa-pattern">
+                {slots.map((slot) => (
+                  <div key={slot.time} className="card-fifa rounded-lg px-4 py-2.5 flex items-center justify-between fifa-pattern">
                     <div className="flex items-center gap-3 relative z-10">
-                      <span className="text-[10px] font-mono text-muted-foreground w-10">{cls.time}</span>
-                      <span className="text-xs font-heading font-bold uppercase">{cls.name}</span>
+                      <Clock className="w-3.5 h-3.5 text-primary" />
+                      <span className="text-xs font-heading font-bold uppercase">Calistenia</span>
                     </div>
-                    <div className="flex items-center gap-2 relative z-10">
-                      <div className="w-16 h-1.5 bg-secondary rounded-full overflow-hidden">
-                        <div className="h-full gradient-cyan rounded-full" style={{ width: `${(cls.booked / cls.max) * 100}%` }} />
-                      </div>
-                      <span className="text-[10px] text-muted-foreground w-8 text-right">{cls.booked}/{cls.max}</span>
-                    </div>
+                    <span className="text-[10px] text-muted-foreground relative z-10">{slot.time} - {slot.endTime}</span>
                   </div>
                 ))}
               </div>
@@ -159,9 +164,9 @@ const Admin = () => {
                       <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider ${
                         user.role === "activo"
                           ? "bg-primary/10 text-primary border border-primary/20"
-                          : "bg-gold/10 text-gold-light border border-gold/20"
+                          : "bg-secondary text-muted-foreground border border-border"
                       }`}>
-                        {user.role === "activo" ? "VIP" : "Pendiente"}
+                        {user.role === "activo" ? "Activo" : "Pendiente"}
                       </span>
                     </div>
                     <p className="text-[10px] text-muted-foreground">{user.email}</p>
@@ -179,52 +184,80 @@ const Admin = () => {
           </motion.div>
         )}
 
-        {/* Students */}
-        {activeTab === "students" && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
-            <div className="flex items-center justify-between">
-              <Input placeholder="Buscar alumno..." className="max-w-[200px] bg-secondary border-border text-xs h-9" />
-              <Button size="sm" className="gradient-cyan text-primary-foreground text-[10px] h-8 font-heading font-bold uppercase">
-                <Plus className="w-3 h-3 mr-1" /> Agregar
-              </Button>
+        {/* Schedule Management */}
+        {activeTab === "schedule" && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
+            <h3 className="font-heading text-xs font-bold uppercase tracking-wider">Gestión de Horarios</h3>
+            <p className="text-[10px] text-muted-foreground">Los horarios aplican para todos los días (Lunes a Sábado). Agregá o eliminá bloques horarios.</p>
+
+            {/* Add new slot */}
+            <div className="card-cyan rounded-xl p-4 space-y-3">
+              <h4 className="text-[10px] font-heading font-bold uppercase tracking-wider text-primary">Agregar Horario</h4>
+              <div className="flex gap-2">
+                <div className="flex-1">
+                  <label className="text-[9px] text-muted-foreground uppercase block mb-1">Inicio</label>
+                  <Input
+                    type="time"
+                    value={newTime}
+                    onChange={(e) => setNewTime(e.target.value)}
+                    className="bg-background/50 border-border h-9 text-sm"
+                  />
+                </div>
+                <div className="flex-1">
+                  <label className="text-[9px] text-muted-foreground uppercase block mb-1">Fin</label>
+                  <Input
+                    type="time"
+                    value={newEndTime}
+                    onChange={(e) => setNewEndTime(e.target.value)}
+                    className="bg-background/50 border-border h-9 text-sm"
+                  />
+                </div>
+                <div className="flex items-end">
+                  <Button
+                    size="sm"
+                    className="gradient-cyan text-primary-foreground h-9 px-3 font-heading font-bold uppercase text-[10px]"
+                    onClick={handleAddSlot}
+                  >
+                    <Plus className="w-3 h-3 mr-1" /> Agregar
+                  </Button>
+                </div>
+              </div>
             </div>
-            <div className="space-y-1.5">
-              {students.map((s) => (
-                <div key={s.id} className="card-fifa rounded-xl p-3 fifa-pattern flex items-center justify-between">
-                  <div className="relative z-10">
-                    <p className="text-xs font-heading font-bold uppercase">{s.name}</p>
-                    <p className="text-[10px] text-muted-foreground">{s.classes} clases · Desde {s.joined}</p>
+
+            {/* Existing slots */}
+            <div className="space-y-2">
+              {slots.map((slot) => (
+                <div key={slot.time} className="card-fifa rounded-xl px-4 py-3 flex items-center justify-between fifa-pattern">
+                  <div className="flex items-center gap-3 relative z-10">
+                    <Clock className="w-4 h-4 text-primary" />
+                    <div>
+                      <p className="text-xs font-heading font-bold uppercase">Calistenia</p>
+                      <p className="text-[10px] text-muted-foreground">{slot.time} - {slot.endTime} · 1h · Max 20 cupos</p>
+                    </div>
                   </div>
-                  <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold uppercase relative z-10 ${
-                    s.level === "Avanzado" ? "bg-gold/10 text-gold-light" :
-                    s.level === "Intermedio" ? "bg-primary/10 text-primary" :
-                    "bg-secondary text-muted-foreground"
-                  }`}>{s.level}</span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-[10px] h-7 px-2 border-destructive/30 text-destructive hover:bg-destructive/10 relative z-10"
+                    onClick={() => handleRemoveSlot(slot.time)}
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </Button>
                 </div>
               ))}
             </div>
-          </motion.div>
-        )}
 
-        {/* Schedule */}
-        {activeTab === "schedule" && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className="font-heading text-xs font-bold uppercase tracking-wider">Horarios Semanales</h3>
-              <Button size="sm" className="gradient-gold text-primary-foreground text-[10px] h-8 font-heading font-bold uppercase">
-                <Plus className="w-3 h-3 mr-1" /> Nueva
-              </Button>
-            </div>
+            {/* Week preview */}
             <div className="card-warrior rounded-xl p-4">
+              <h4 className="text-[10px] font-heading font-bold uppercase tracking-wider text-primary mb-3 text-center">Vista Semanal</h4>
               <div className="grid grid-cols-6 gap-2">
                 {["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"].map((day) => (
                   <div key={day}>
-                    <p className="text-[9px] font-heading font-bold text-center mb-1.5 text-gold-light uppercase">{day}</p>
+                    <p className="text-[9px] font-heading font-bold text-center mb-1.5 text-primary uppercase">{day}</p>
                     <div className="space-y-1">
-                      {["09:00", "18:00"].map((time) => (
-                        <div key={time} className="bg-background/30 rounded-lg p-1.5 text-center">
-                          <p className="text-[8px] text-muted-foreground">{time}</p>
-                          <p className="text-[8px] font-heading font-bold uppercase">CAL</p>
+                      {slots.map((slot) => (
+                        <div key={slot.time} className="bg-primary/5 border border-primary/10 rounded-lg p-1 text-center">
+                          <p className="text-[7px] text-muted-foreground">{slot.time}</p>
                         </div>
                       ))}
                     </div>
@@ -245,9 +278,9 @@ const Admin = () => {
               </Button>
             </div>
             <div className="card-warrior rounded-xl p-4 space-y-3">
-              {["Calentamiento", "Trabajo Técnico", "Bloque de Fuerza", "Accesorios"].map((block) => (
+              {["Rutina de Entrenamiento", "Accesorios"].map((block) => (
                 <div key={block} className="space-y-1">
-                  <label className="text-[9px] font-heading font-bold text-gold-light uppercase tracking-widest">{block}</label>
+                  <label className="text-[9px] font-heading font-bold text-primary uppercase tracking-widest">{block}</label>
                   <Textarea
                     placeholder={`Ejercicios de ${block.toLowerCase()}...`}
                     className="bg-background/50 border-border min-h-[60px] text-xs"

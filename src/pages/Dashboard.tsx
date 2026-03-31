@@ -1,25 +1,33 @@
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { Calendar, Dumbbell, Clock, ChevronRight, LogOut, User, ChartBar as BarChart3, ShoppingBag, BookOpen } from "lucide-react";
+import { Calendar, Dumbbell, Clock, ChevronRight, LogOut, User, ChartBar as BarChart3, ShoppingBag, BookOpen, X, Check } from "lucide-react";
 import DailyWorkout from "@/components/DailyWorkout";
 import Logo from "@/components/Logo";
+import { bookingStore } from "@/lib/bookingStore";
 
-const getCurrentHour = () => new Date().getHours();
-
-const upcomingClasses = [
-  { id: 1, name: "Calistenia Lunes", time: "18:00", endHour: 19, duration: "1h", day: "Lun", reservations: 14, maxSpots: 20 },
-  { id: 2, name: "Calistenia Lunes", time: "19:00", endHour: 20, duration: "1h", day: "Lun", reservations: 8, maxSpots: 20 },
-  { id: 3, name: "Calistenia Lunes", time: "20:00", endHour: 21, duration: "1h", day: "Lun", reservations: 17, maxSpots: 20 },
-  { id: 4, name: "Calistenia Martes", time: "18:00", endHour: 19, duration: "1h", day: "Mar", reservations: 10, maxSpots: 20 },
-  { id: 5, name: "Calistenia Martes", time: "19:00", endHour: 20, duration: "1h", day: "Mar", reservations: 5, maxSpots: 20 },
-  { id: 6, name: "Calistenia Martes", time: "20:00", endHour: 21, duration: "1h", day: "Mar", reservations: 12, maxSpots: 20 },
+const dailyQuotes = [
+  "\"La disciplina es el puente entre lo que eres y lo que puedes llegar a ser.\"",
+  "\"No es la carga lo que te rompe, sino cómo la cargas.\" — Lou Holtz",
+  "\"Primero decí a vos mismo qué querés ser, y después hacé lo que tenés que hacer.\" — Epicteto",
+  "\"La fuerza no viene de ganar. Tus luchas desarrollan tu fuerza.\" — Arnold",
+  "\"Lo que soportamos nos transforma. Lo que nos desafía nos define.\"",
+  "\"Un guerrero no se rinde. Se levanta cada vez más fuerte.\"",
+  "\"Sufre la disciplina o sufre el arrepentimiento. Vos elegís.\"",
 ];
+
+const getDayQuote = () => {
+  const dayOfYear = Math.floor(
+    (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000
+  );
+  return dailyQuotes[dayOfYear % dailyQuotes.length];
+};
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const currentHour = getCurrentHour();
+  const bookings = useSyncExternalStore(bookingStore.subscribe, bookingStore.getBookings);
+  const quote = getDayQuote();
 
   return (
     <div className="min-h-screen bg-background pb-8">
@@ -47,11 +55,11 @@ const Dashboard = () => {
           <h1 className="font-heading text-xl font-bold uppercase tracking-wider mb-1">
             <span className="text-gradient">Tu mejor versión</span>
           </h1>
-          <h2 className="font-heading text-lg font-bold uppercase tracking-wider text-gradient-gold mb-1">
-            empieza hoy ⚔️
+          <h2 className="font-heading text-lg font-bold uppercase tracking-wider text-gradient mb-1">
+            empieza hoy ⚡
           </h2>
           <p className="text-muted-foreground text-[10px] italic tracking-wide">
-            "La disciplina es el puente entre lo que eres y lo que puedes llegar a ser."
+            {quote}
           </p>
         </motion.div>
 
@@ -65,7 +73,7 @@ const Dashboard = () => {
           {[
             { icon: Calendar, label: "Reservar", onClick: () => navigate("/booking") },
             { icon: Dumbbell, label: "Rutina", onClick: () => document.getElementById("workout")?.scrollIntoView({ behavior: "smooth" }) },
-            { icon: Clock, label: "Reservas", onClick: () => {} },
+            { icon: Clock, label: "Reservas", onClick: () => document.getElementById("my-bookings")?.scrollIntoView({ behavior: "smooth" }) },
             { icon: User, label: "Perfil", onClick: () => navigate("/profile") },
             { icon: ShoppingBag, label: "Tienda", onClick: () => navigate("/store") },
             { icon: BookOpen, label: "Rutinas", onClick: () => navigate("/routines") },
@@ -83,63 +91,59 @@ const Dashboard = () => {
           ))}
         </motion.div>
 
-        {/* Upcoming Classes */}
+        {/* My Bookings */}
         <motion.section
+          id="my-bookings"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
           <div className="flex items-center justify-between mb-3">
-            <h2 className="font-heading text-sm font-bold uppercase tracking-wider">Próximas Clases</h2>
+            <h2 className="font-heading text-sm font-bold uppercase tracking-wider">Mis Reservas</h2>
             <Button variant="ghost" size="sm" onClick={() => navigate("/booking")} className="gap-1 text-[10px] text-muted-foreground">
-              Ver todas <ChevronRight className="w-3 h-3" />
+              Reservar <ChevronRight className="w-3 h-3" />
             </Button>
           </div>
-          <div className="space-y-2">
-            {upcomingClasses.map((cls) => {
-              const isFinished = currentHour >= cls.endHour;
-              return (
-                <div
-                  key={cls.id}
-                  className={`card-fifa rounded-xl p-3 fifa-pattern flex items-center justify-between transition-all ${
-                    isFinished ? "opacity-50 grayscale" : ""
-                  }`}
+
+          {bookings.length === 0 ? (
+            <div className="card-fifa rounded-xl p-6 fifa-pattern text-center">
+              <div className="relative z-10">
+                <Calendar className="w-8 h-8 text-primary/30 mx-auto mb-2" />
+                <p className="text-xs text-muted-foreground">No tenés clases reservadas</p>
+                <Button
+                  size="sm"
+                  className="gradient-cyan text-primary-foreground text-[10px] h-7 px-4 mt-3 font-heading font-bold uppercase"
+                  onClick={() => navigate("/booking")}
                 >
+                  Reservar Clase
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {bookings.map((b) => (
+                <div key={b.id} className="card-fifa rounded-xl p-3 fifa-pattern flex items-center justify-between">
                   <div className="flex items-center gap-3 relative z-10">
-                    <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${isFinished ? "bg-muted/20" : "bg-primary/10"}`}>
-                      <Dumbbell className={`w-4 h-4 ${isFinished ? "text-muted-foreground" : "text-primary"}`} />
+                    <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-primary/10">
+                      <Check className="w-4 h-4 text-primary" />
                     </div>
                     <div>
-                      <p className="text-xs font-heading font-bold uppercase">{cls.name}</p>
-                      <p className="text-[10px] text-muted-foreground">
-                        {cls.day} · {cls.time} - {cls.endHour}:00 · {cls.duration}
-                      </p>
+                      <p className="text-xs font-heading font-bold uppercase">{b.name} {b.day}</p>
+                      <p className="text-[10px] text-muted-foreground">{b.day} · {b.time} - {b.endTime}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 relative z-10">
-                    <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${
-                      isFinished
-                        ? "bg-muted/20 text-muted-foreground"
-                        : cls.maxSpots - cls.reservations <= 3
-                          ? "bg-destructive/10 text-destructive"
-                          : "bg-primary/10 text-primary"
-                    }`}>
-                      {cls.reservations}/{cls.maxSpots}
-                    </span>
-                    {isFinished ? (
-                      <Button size="sm" disabled className="text-[10px] h-7 px-3 font-heading font-bold uppercase opacity-60">
-                        Finalizada
-                      </Button>
-                    ) : (
-                      <Button size="sm" className="gradient-cyan text-primary-foreground text-[10px] h-7 px-3 font-heading font-bold uppercase">
-                        Reservar
-                      </Button>
-                    )}
-                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-[10px] h-7 px-2 border-destructive/30 text-destructive hover:bg-destructive/10 relative z-10"
+                    onClick={() => bookingStore.removeBooking(b.id)}
+                  >
+                    <X className="w-3 h-3" />
+                  </Button>
                 </div>
-              );
-            })}
-          </div>
+              ))}
+            </div>
+          )}
         </motion.section>
 
         {/* Daily Workout */}
