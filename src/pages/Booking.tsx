@@ -2,7 +2,8 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Calendar, Clock, Users, Check } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, Users, Check, X } from "lucide-react";
+import { toast } from "sonner";
 
 const days = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
 const dates = [
@@ -18,43 +19,72 @@ interface ClassSlot {
   id: string;
   name: string;
   time: string;
+  endTime: string;
   duration: string;
   instructor: string;
   spots: number;
   maxSpots: number;
-  booked?: boolean;
+  booked: boolean;
 }
 
 const timeSlots = [
-  { time: "09:00", label: "Mañana" },
-  { time: "18:00", label: "Tarde" },
-  { time: "19:00", label: "Tarde" },
-  { time: "20:00", label: "Noche" },
+  { time: "09:00", endTime: "10:00" },
+  { time: "18:00", endTime: "19:00" },
+  { time: "19:00", endTime: "20:00" },
+  { time: "20:00", endTime: "21:00" },
 ];
 
-// Generate classes for each date - all "Calistenia", 20 spots
 const generateClasses = (dateNum: number): ClassSlot[] => {
   return timeSlots.map((slot, i) => ({
     id: `${dateNum}-${i}`,
     name: "Calistenia",
     time: slot.time,
+    endTime: slot.endTime,
     duration: "1h",
     instructor: "Coach Martín",
-    spots: Math.floor(Math.random() * 15) + 5, // 5-19 random spots taken simulation
+    spots: Math.floor(Math.random() * 12) + 3,
     maxSpots: 20,
-    booked: dateNum === 29 && slot.time === "18:00", // example booked
+    booked: false,
   }));
 };
-
-const classesData: Record<number, ClassSlot[]> = {};
-dates.forEach((d) => {
-  classesData[d.date] = generateClasses(d.date);
-});
 
 const Booking = () => {
   const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState(28);
+  const [classesData, setClassesData] = useState<Record<number, ClassSlot[]>>(() => {
+    const data: Record<number, ClassSlot[]> = {};
+    dates.forEach((d) => {
+      data[d.date] = generateClasses(d.date);
+    });
+    return data;
+  });
+
   const classes = classesData[selectedDate] || [];
+
+  const handleBook = (classId: string) => {
+    setClassesData((prev) => {
+      const updated = { ...prev };
+      updated[selectedDate] = updated[selectedDate].map((cls) => {
+        if (cls.id === classId) {
+          if (cls.booked) {
+            toast("Reserva cancelada", { description: `${cls.name} · ${cls.time}` });
+            return { ...cls, booked: false, spots: cls.spots - 1 };
+          } else {
+            if (cls.spots >= cls.maxSpots) {
+              toast.error("Clase llena", { description: "No hay cupos disponibles" });
+              return cls;
+            }
+            toast.success("¡Reserva confirmada!", {
+              description: `${cls.name} · ${cls.time} - ${cls.endTime}`,
+            });
+            return { ...cls, booked: true, spots: cls.spots + 1 };
+          }
+        }
+        return cls;
+      });
+      return updated;
+    });
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -99,7 +129,7 @@ const Booking = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
-              className={`card-fifa rounded-xl p-4 fifa-pattern ${cls.booked ? "ring-1 ring-primary/30" : ""}`}
+              className={`card-fifa rounded-xl p-4 fifa-pattern ${cls.booked ? "ring-1 ring-primary/40" : ""}`}
             >
               <div className="flex items-center justify-between relative z-10">
                 <div className="space-y-1.5">
@@ -112,7 +142,7 @@ const Booking = () => {
                     )}
                   </div>
                   <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
-                    <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {cls.time} · {cls.duration}</span>
+                    <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {cls.time} - {cls.endTime} · {cls.duration}</span>
                     <span className="flex items-center gap-1"><Users className="w-3 h-3" /> {cls.instructor}</span>
                   </div>
                 </div>
@@ -123,9 +153,23 @@ const Booking = () => {
                     {cls.spots}/{cls.maxSpots}
                   </span>
                   {cls.booked ? (
-                    <Button variant="outline" size="sm" className="text-[10px] h-7 px-3">Cancelar</Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-[10px] h-7 px-3 border-destructive/30 text-destructive hover:bg-destructive/10"
+                      onClick={() => handleBook(cls.id)}
+                    >
+                      <X className="w-3 h-3 mr-1" /> Cancelar
+                    </Button>
                   ) : (
-                    <Button size="sm" className="gradient-cyan text-primary-foreground text-[10px] h-7 px-3 font-heading font-bold uppercase">Reservar</Button>
+                    <Button
+                      size="sm"
+                      className="gradient-cyan text-primary-foreground text-[10px] h-7 px-3 font-heading font-bold uppercase"
+                      onClick={() => handleBook(cls.id)}
+                      disabled={cls.spots >= cls.maxSpots}
+                    >
+                      {cls.spots >= cls.maxSpots ? "Lleno" : "Reservar"}
+                    </Button>
                   )}
                 </div>
               </div>

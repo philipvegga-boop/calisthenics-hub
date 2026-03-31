@@ -10,17 +10,6 @@ interface WorkoutBlock {
 
 const workoutBlocks: WorkoutBlock[] = [
   {
-    icon: Flame,
-    title: "Calentamiento",
-    color: "text-gold-light",
-    exercises: [
-      { name: "Saltos de cuerda", detail: "3 min" },
-      { name: "Rotación articular", detail: "Hombros, muñecas, caderas" },
-      { name: "Scapular pulls", detail: "2x10" },
-      { name: "Hollow body hold", detail: "3x20s" },
-    ],
-  },
-  {
     icon: Dumbbell,
     title: "Rutina de Entrenamiento",
     color: "text-primary",
