@@ -38,13 +38,15 @@ const persistBookings = (data: BookedClass[]) => {
 
 let bookedClasses: BookedClass[] = loadInitialBookings();
 let listeners: (() => void)[] = [];
+let bookingsSnapshot: BookedClass[] = bookedClasses;
 
 export const bookingStore = {
-  getBookings: () => [...bookedClasses],
+  getBookings: () => bookingsSnapshot,
 
   addBooking: (cls: BookedClass) => {
     if (!bookedClasses.find(b => b.id === cls.id)) {
       bookedClasses = [...bookedClasses, cls];
+      bookingsSnapshot = bookedClasses;
       persistBookings(bookedClasses);
       listeners.forEach(l => l());
     }
@@ -52,6 +54,7 @@ export const bookingStore = {
 
   removeBooking: (id: string) => {
     bookedClasses = bookedClasses.filter(b => b.id !== id);
+    bookingsSnapshot = bookedClasses;
     persistBookings(bookedClasses);
     listeners.forEach(l => l());
   },

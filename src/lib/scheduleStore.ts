@@ -38,18 +38,21 @@ const persistSlots = (data: TimeSlot[]) => {
 
 let slots: TimeSlot[] = loadInitialSlots();
 let listeners: (() => void)[] = [];
+let slotsSnapshot: TimeSlot[] = slots;
 
 export const scheduleStore = {
-  getSlots: () => [...slots],
+  getSlots: () => slotsSnapshot,
 
   addSlot: (slot: TimeSlot) => {
     slots = [...slots, slot].sort((a, b) => a.time.localeCompare(b.time));
+    slotsSnapshot = slots;
     persistSlots(slots);
     listeners.forEach(l => l());
   },
 
   removeSlot: (time: string) => {
     slots = slots.filter(s => s.time !== time);
+    slotsSnapshot = slots;
     persistSlots(slots);
     listeners.forEach(l => l());
   },
