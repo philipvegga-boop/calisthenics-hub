@@ -36,6 +36,11 @@ interface ClassSlot {
   maxSpots: number;
 }
 
+const getBaseOccupancy = (seed: string, maxSpots: number) => {
+  const hash = Array.from(seed).reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+  return hash % Math.max(1, Math.floor(maxSpots * 0.6));
+};
+
 const generateClasses = (dateNum: number, timeSlots: TimeSlot[]): ClassSlot[] => {
   return timeSlots.map((slot, i) => ({
     id: `${dateNum}-${i}-${slot.time}`,
@@ -44,7 +49,7 @@ const generateClasses = (dateNum: number, timeSlots: TimeSlot[]): ClassSlot[] =>
     endTime: slot.endTime,
     duration: "1h",
     instructor: "Coach Martín",
-    spots: Math.floor(Math.random() * 12) + 3,
+    spots: getBaseOccupancy(`${dateNum}-${slot.time}`, 20),
     maxSpots: 20,
   }));
 };
@@ -139,6 +144,8 @@ const Booking = () => {
         <div className="space-y-2.5">
           {classes.map((cls, i) => {
             const isBooked = bookingStore.isBooked(cls.id);
+            const spotsTaken = Math.min(cls.maxSpots, cls.spots + (isBooked ? 1 : 0));
+            const isFull = spotsTaken >= cls.maxSpots;
             return (
               <motion.div
                 key={cls.id}
@@ -164,9 +171,9 @@ const Booking = () => {
                   </div>
                   <div className="flex flex-col items-end gap-2">
                     <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${
-                      cls.maxSpots - cls.spots <= 5 ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary"
+                      cls.maxSpots - spotsTaken <= 5 ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary"
                     }`}>
-                      {cls.spots}/{cls.maxSpots}
+                      {spotsTaken}/{cls.maxSpots}
                     </span>
                     {isBooked ? (
                       <Button
@@ -182,9 +189,9 @@ const Booking = () => {
                         size="sm"
                         className="gradient-cyan text-primary-foreground text-[10px] h-7 px-3 font-heading font-bold uppercase"
                         onClick={() => handleBook(cls)}
-                        disabled={cls.spots >= cls.maxSpots}
+                        disabled={isFull}
                       >
-                        {cls.spots >= cls.maxSpots ? "Lleno" : "Reservar"}
+                        {isFull ? "Lleno" : "Reservar"}
                       </Button>
                     )}
                   </div>

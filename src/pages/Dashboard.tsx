@@ -1,4 +1,4 @@
-import { useState, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -58,7 +58,7 @@ const Dashboard = () => {
           <h2 className="font-heading text-lg font-bold uppercase tracking-wider text-gradient mb-1">
             empieza hoy ⚡
           </h2>
-          <p className="text-muted-foreground text-[10px] italic tracking-wide">
+          <p className="text-foreground/80 text-[10px] italic tracking-wide">
             {quote}
           </p>
         </motion.div>
@@ -70,10 +70,10 @@ const Dashboard = () => {
           transition={{ delay: 0.1 }}
           className="grid grid-cols-3 gap-2"
         >
-          {[
-            { icon: Calendar, label: "Reservar", onClick: () => navigate("/booking") },
-            { icon: Dumbbell, label: "Rutina", onClick: () => document.getElementById("workout")?.scrollIntoView({ behavior: "smooth" }) },
-            { icon: Clock, label: "Reservas", onClick: () => document.getElementById("my-bookings")?.scrollIntoView({ behavior: "smooth" }) },
+            {[
+              { icon: Calendar, label: "Reservar", onClick: () => navigate("/booking") },
+              { icon: Dumbbell, label: "Rutina", onClick: () => document.getElementById("workout")?.scrollIntoView({ behavior: "smooth" }) },
+              { icon: Clock, label: "Mis reservas", onClick: () => navigate("/booking") },
             { icon: User, label: "Perfil", onClick: () => navigate("/profile") },
             { icon: ShoppingBag, label: "Tienda", onClick: () => navigate("/store") },
             { icon: BookOpen, label: "Rutinas", onClick: () => navigate("/routines") },

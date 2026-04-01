@@ -197,7 +197,7 @@ const Profile = () => {
 
             <Button
               className={`w-full font-heading font-bold uppercase tracking-wide text-sm ${
-                confirmed ? "bg-success text-white" : "gradient-cyan text-primary-foreground"
+                "gradient-cyan text-primary-foreground"
               }`}
               onClick={() => setConfirmed(!confirmed)}
             >

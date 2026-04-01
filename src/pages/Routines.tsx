@@ -120,16 +120,16 @@ const Routines = () => {
               </div>
               <div className="flex items-center gap-2">
                 <span className={`text-[10px] px-2 py-1 rounded-full font-bold uppercase tracking-wider ${
-                  currentRoutine.intensity === "Alta" ? "bg-destructive/10 text-destructive" :
-                  currentRoutine.intensity === "Media-Alta" ? "bg-warning/10 text-warning" :
+                  currentRoutine.intensity === "Alta" ? "bg-primary/20 text-primary" :
+                  currentRoutine.intensity === "Media-Alta" ? "bg-primary/15 text-primary" :
                   currentRoutine.intensity === "Media" ? "bg-primary/10 text-primary" :
-                  "bg-success/10 text-success"
+                  "bg-primary/5 text-primary/80"
                 }`}>
                   {currentRoutine.intensity}
                 </span>
                 <button
                   onClick={() => setIsEditing(!isEditing)}
-                  className="text-muted-foreground hover:text-gold-light transition-colors"
+                  className="text-muted-foreground hover:text-primary transition-colors"
                 >
                   <Edit3 className="w-4 h-4" />
                 </button>
@@ -138,10 +138,10 @@ const Routines = () => {
 
             {/* Injury Warning */}
             {shouldWarn && (
-              <div className="bg-warning/10 border border-warning/20 rounded-lg p-3 mb-3 flex items-start gap-2">
-                <AlertTriangle className="w-4 h-4 text-warning flex-shrink-0 mt-0.5" />
+              <div className="bg-primary/10 border border-primary/20 rounded-lg p-3 mb-3 flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-[10px] font-bold text-warning uppercase">Precaución — Lesión de Muñeca</p>
+                  <p className="text-[10px] font-bold text-primary uppercase">Precaución — Lesión de Muñeca</p>
                   <p className="text-[10px] text-muted-foreground mt-0.5">
                     Considera variantes seguras: evita carga directa en muñeca. Usa paralelas o puños cerrados.
                   </p>
@@ -158,10 +158,10 @@ const Routines = () => {
                   className="bg-background/50 border-border text-sm min-h-[200px] font-mono"
                 />
                 <div className="flex gap-2">
-                  <Button size="sm" className="gradient-gold text-primary-foreground text-xs font-heading uppercase" onClick={() => setIsEditing(false)}>
+                  <Button size="sm" className="gradient-cyan text-primary-foreground text-xs font-heading uppercase" onClick={() => setIsEditing(false)}>
                     <CheckCircle className="w-3 h-3 mr-1" /> Guardar
                   </Button>
-                  <Button size="sm" variant="outline" className="text-xs border-gold/30" onClick={() => setShowPredefined(!showPredefined)}>
+                  <Button size="sm" variant="outline" className="text-xs border-primary/30 text-primary hover:bg-primary/10" onClick={() => setShowPredefined(!showPredefined)}>
                     <ChevronDown className="w-3 h-3 mr-1" /> Rutinas Base
                   </Button>
                 </div>
@@ -186,7 +186,7 @@ const Routines = () => {
             animate={{ opacity: 1, height: "auto" }}
             className="card-warrior rounded-xl p-4 space-y-2"
           >
-            <h3 className="font-heading text-xs font-bold uppercase tracking-widest text-gold-light mb-2">
+            <h3 className="font-heading text-xs font-bold uppercase tracking-widest text-primary mb-2">
               Rutinas Predeterminadas
             </h3>
             <div className="max-h-60 overflow-y-auto space-y-1.5">
@@ -200,7 +200,7 @@ const Routines = () => {
                     <p className="text-xs font-medium">{r.name}</p>
                     <span className="text-[10px] text-muted-foreground">{r.level}</span>
                   </div>
-                  <span className="text-[10px] text-gold/50">Aplicar</span>
+                  <span className="text-[10px] text-primary/60">Aplicar</span>
                 </button>
               ))}
             </div>
@@ -215,8 +215,8 @@ const Routines = () => {
             className="card-warrior rounded-xl p-4"
           >
             <div className="flex items-center gap-2 mb-3">
-              <AlertTriangle className="w-4 h-4 text-gold-light" />
-              <h3 className="font-heading text-xs font-bold uppercase tracking-widest text-gold-light">
+              <AlertTriangle className="w-4 h-4 text-primary" />
+              <h3 className="font-heading text-xs font-bold uppercase tracking-widest text-primary">
                 Variantes Seguras (Muñeca)
               </h3>
             </div>
@@ -229,7 +229,7 @@ const Routines = () => {
                 "Planche lean en paralelas bajas",
               ].map((v, i) => (
                 <div key={i} className="flex items-center gap-2 py-1.5 border-b border-border/20 last:border-0">
-                  <CheckCircle className="w-3 h-3 text-success flex-shrink-0" />
+                  <CheckCircle className="w-3 h-3 text-primary flex-shrink-0" />
                   <span className="text-[11px] text-muted-foreground">{v}</span>
                 </div>
               ))}
