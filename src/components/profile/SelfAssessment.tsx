@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ChevronRight, Swords, Dumbbell, Hand, Shield, Zap } from "lucide-react";
+import { ChevronRight, Swords, Dumbbell, Hand, Shield, Zap, Footprints, Timer } from "lucide-react";
 
 interface AssessmentQuestion {
   id: string;
@@ -16,7 +16,7 @@ const questions: AssessmentQuestion[] = [
     id: "pull",
     label: "Tirón (Pull)",
     icon: Dumbbell,
-    question: "¿Cuál es tu máximo real en Tirón?",
+    question: "Tirón: ¿qué nivel te representa hoy?",
     options: [
       { label: "0-3 dominadas", value: 2 },
       { label: "4-8 dominadas", value: 4 },
@@ -29,7 +29,7 @@ const questions: AssessmentQuestion[] = [
     id: "push",
     label: "Empuje (Push)",
     icon: Hand,
-    question: "¿Cuál es tu máximo real en Empuje?",
+    question: "Empuje: ¿qué nivel te representa hoy?",
     options: [
       { label: "Push-ups <10", value: 2 },
       { label: "10-20 push-ups", value: 4 },
@@ -42,7 +42,7 @@ const questions: AssessmentQuestion[] = [
     id: "core",
     label: "Control (Core)",
     icon: Shield,
-    question: "¿Cuál es tu máximo real en Core?",
+    question: "Core: ¿qué nivel te representa hoy?",
     options: [
       { label: "Plank 30s máximo", value: 2 },
       { label: "Hollow Body 20s+", value: 4 },
@@ -55,13 +55,39 @@ const questions: AssessmentQuestion[] = [
     id: "flexibility",
     label: "Flexibilidad",
     icon: Zap,
-    question: "¿Cómo está tu flexibilidad?",
+    question: "Flexibilidad (comodín): ¿cómo estás hoy?",
     options: [
       { label: "No toco las puntas de los pies", value: 2 },
       { label: "Toco las puntas con esfuerzo", value: 4 },
       { label: "Palmas al piso con piernas rectas", value: 6 },
       { label: "Pike/pancake con pecho al piso", value: 8 },
       { label: "Splits completo / movilidad élite", value: 10 },
+    ],
+  },
+  {
+    id: "legs",
+    label: "Piernas",
+    icon: Footprints,
+    question: "Piernas: ¿cuál es tu capacidad actual?",
+    options: [
+      { label: "Sentadilla libre inestable", value: 2 },
+      { label: "Sentadilla profunda controlada", value: 4 },
+      { label: "Pistol asistida por lado", value: 6 },
+      { label: "Pistol limpia por lado", value: 8 },
+      { label: "Pistol lastrada / salto explosivo", value: 10 },
+    ],
+  },
+  {
+    id: "engine",
+    label: "Resistencia",
+    icon: Timer,
+    question: "Resistencia: ¿cómo respondes al volumen?",
+    options: [
+      { label: "Me fatigo en 10 min", value: 2 },
+      { label: "Sostengo 20 min suaves", value: 4 },
+      { label: "Sostengo 30 min continuos", value: 6 },
+      { label: "Sostengo 45 min intensos", value: 8 },
+      { label: "Sostengo 60 min élite", value: 10 },
     ],
   },
 ];
@@ -148,20 +174,14 @@ const SelfAssessment = () => {
               const score = scores[q.id] || 0;
               const heightPercent = (score / 10) * 100;
               const isWeakest = q.id === weakestPillar;
-              const colors = [
-                { bar: "from-cyan to-primary", glow: "shadow-[0_0_20px_hsl(190,95%,50%,0.3)]" },
-                { bar: "from-primary to-blue-500", glow: "shadow-[0_0_20px_hsl(217,91%,60%,0.3)]" },
-                { bar: "from-blue-400 to-primary", glow: "shadow-[0_0_20px_hsl(190,95%,50%,0.3)]" },
-                { bar: "from-primary to-cyan", glow: "shadow-[0_0_20px_hsl(190,100%,60%,0.3)]" },
-              ];
-              const color = colors[i % colors.length];
+              const fillClass = score >= 8 ? "gradient-cyan" : score >= 5 ? "bg-primary/80" : "bg-primary/55";
 
               return (
                 <div key={q.id} className="flex flex-col items-center gap-2">
                   <span className="text-xs font-heading font-bold text-foreground">{score}</span>
                   <div className="w-12 h-40 rounded-t-lg bg-secondary/50 border border-border/30 relative overflow-hidden">
                     <motion.div
-                      className={`absolute bottom-0 left-0 right-0 rounded-t-lg bg-gradient-to-t ${color.bar} ${color.glow}`}
+                      className={`absolute bottom-0 left-0 right-0 rounded-t-lg ${fillClass} ${isWeakest ? "opacity-70" : "opacity-95"}`}
                       initial={{ height: 0 }}
                       animate={{ height: `${heightPercent}%` }}
                       transition={{ duration: 1, delay: i * 0.2, ease: "easeOut" }}
@@ -264,7 +284,7 @@ const SelfAssessment = () => {
             ¿Cuál es tu nivel?
           </h3>
           <p className="text-xs text-muted-foreground mb-5 leading-relaxed">
-            4 preguntas rápidas para medir tu fuerza en Tirón, Empuje, Control y Flexibilidad.
+            {questions.length} preguntas rápidas para medir Tirón, Empuje, Core, Flexibilidad, Piernas y Resistencia.
           </p>
           <Button
             className="gradient-cyan text-primary-foreground font-heading font-bold uppercase tracking-wide"
