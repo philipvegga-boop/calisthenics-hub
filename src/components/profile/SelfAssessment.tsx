@@ -281,7 +281,7 @@ const SelfAssessment = () => {
         <div className="relative z-10">
           <Swords className="w-8 h-8 text-primary mx-auto mb-3" />
           <h3 className="font-heading text-base font-bold uppercase tracking-wide mb-2">
-            ¿Cuál es tu nivel?
+            Midamos tu nivel
           </h3>
           <p className="text-xs text-muted-foreground mb-5 leading-relaxed">
             {questions.length} preguntas rápidas para medir Tirón, Empuje, Core, Flexibilidad, Piernas y Resistencia.
