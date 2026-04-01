@@ -48,8 +48,8 @@
     /* Custom tokens */
     --surface: 220 15% 9%;
     --surface-hover: 220 15% 12%;
-    --success: 142 76% 36%;
-    --warning: 38 92% 50%;
+    --success: 190 95% 50%;
+    --warning: 190 95% 50%;
     --cyan: 190 95% 50%;
     --cyan-glow: 190 100% 60%;
     --cyan-muted: 195 60% 35%;
