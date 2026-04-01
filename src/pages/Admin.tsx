@@ -5,15 +5,17 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Users, Calendar, Dumbbell, Plus, BarChart3, UserCheck, Search, Trash2, Clock } from "lucide-react";
+import { ArrowLeft, Users, Calendar, Dumbbell, Plus, BarChart3, UserCheck, Search, Trash2, Clock, MapPin, BookOpen } from "lucide-react";
 import Logo from "@/components/Logo";
 import { scheduleStore } from "@/lib/scheduleStore";
+import { nextClassStore } from "@/lib/nextClassStore";
 import { toast } from "sonner";
 
 const tabs = [
   { id: "overview", label: "Resumen", icon: BarChart3 },
   { id: "users", label: "Usuarios", icon: UserCheck },
   { id: "schedule", label: "Horarios", icon: Calendar },
+  { id: "nextclass", label: "Próxima Clase", icon: MapPin },
   { id: "workout", label: "Rutina", icon: Dumbbell },
 ];
 
@@ -35,6 +37,14 @@ const Admin = () => {
   const [newEndTime, setNewEndTime] = useState("");
 
   const slots = useSyncExternalStore(scheduleStore.subscribe, scheduleStore.getSlots);
+  const nextClass = useSyncExternalStore(nextClassStore.subscribe, nextClassStore.get);
+
+  // Local state for next class editing
+  const [ncDay, setNcDay] = useState(nextClass.day);
+  const [ncTime, setNcTime] = useState(nextClass.time);
+  const [ncLocation, setNcLocation] = useState(nextClass.location);
+  const [ncInstructor, setNcInstructor] = useState(nextClass.instructor);
+  const [ncTopic, setNcTopic] = useState(nextClass.topic);
 
   const toggleUserRole = (userId: string) => {
     setUsers(prev =>
@@ -69,6 +79,17 @@ const Admin = () => {
   const handleRemoveSlot = (time: string) => {
     scheduleStore.removeSlot(time);
     toast("Horario eliminado");
+  };
+
+  const handleSaveNextClass = () => {
+    nextClassStore.update({
+      day: ncDay,
+      time: ncTime,
+      location: ncLocation,
+      instructor: ncInstructor,
+      topic: ncTopic,
+    });
+    toast.success("Próxima clase actualizada");
   };
 
   return (
@@ -196,28 +217,14 @@ const Admin = () => {
               <div className="flex gap-2">
                 <div className="flex-1">
                   <label className="text-[9px] text-muted-foreground uppercase block mb-1">Inicio</label>
-                  <Input
-                    type="time"
-                    value={newTime}
-                    onChange={(e) => setNewTime(e.target.value)}
-                    className="bg-background/50 border-border h-9 text-sm"
-                  />
+                  <Input type="time" value={newTime} onChange={(e) => setNewTime(e.target.value)} className="bg-background/50 border-border h-9 text-sm" />
                 </div>
                 <div className="flex-1">
                   <label className="text-[9px] text-muted-foreground uppercase block mb-1">Fin</label>
-                  <Input
-                    type="time"
-                    value={newEndTime}
-                    onChange={(e) => setNewEndTime(e.target.value)}
-                    className="bg-background/50 border-border h-9 text-sm"
-                  />
+                  <Input type="time" value={newEndTime} onChange={(e) => setNewEndTime(e.target.value)} className="bg-background/50 border-border h-9 text-sm" />
                 </div>
                 <div className="flex items-end">
-                  <Button
-                    size="sm"
-                    className="gradient-cyan text-primary-foreground h-9 px-3 font-heading font-bold uppercase text-[10px]"
-                    onClick={handleAddSlot}
-                  >
+                  <Button size="sm" className="gradient-cyan text-primary-foreground h-9 px-3 font-heading font-bold uppercase text-[10px]" onClick={handleAddSlot}>
                     <Plus className="w-3 h-3 mr-1" /> Agregar
                   </Button>
                 </div>
@@ -235,12 +242,7 @@ const Admin = () => {
                       <p className="text-[10px] text-muted-foreground">{slot.time} - {slot.endTime} · 1h · Max 20 cupos</p>
                     </div>
                   </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="text-[10px] h-7 px-2 border-destructive/30 text-destructive hover:bg-destructive/10 relative z-10"
-                    onClick={() => handleRemoveSlot(slot.time)}
-                  >
+                  <Button variant="outline" size="sm" className="text-[10px] h-7 px-2 border-destructive/30 text-destructive hover:bg-destructive/10 relative z-10" onClick={() => handleRemoveSlot(slot.time)}>
                     <Trash2 className="w-3 h-3" />
                   </Button>
                 </div>
@@ -268,6 +270,42 @@ const Admin = () => {
           </motion.div>
         )}
 
+        {/* Next Class Editor */}
+        {activeTab === "nextclass" && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
+            <h3 className="font-heading text-xs font-bold uppercase tracking-wider">Editar Próxima Clase</h3>
+            <p className="text-[10px] text-muted-foreground">Estos datos se muestran en el perfil del alumno como "Tu Próxima Cita con el Hierro".</p>
+
+            <div className="card-cyan rounded-xl p-5 space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[9px] text-muted-foreground uppercase tracking-wider block mb-1">Día</label>
+                  <Input value={ncDay} onChange={(e) => setNcDay(e.target.value)} className="bg-background/50 border-border h-9 text-sm" placeholder="Lunes 31 Mar" />
+                </div>
+                <div>
+                  <label className="text-[9px] text-muted-foreground uppercase tracking-wider block mb-1">Hora</label>
+                  <Input value={ncTime} onChange={(e) => setNcTime(e.target.value)} className="bg-background/50 border-border h-9 text-sm" placeholder="18:00 hrs" />
+                </div>
+                <div>
+                  <label className="text-[9px] text-muted-foreground uppercase tracking-wider block mb-1">Ubicación</label>
+                  <Input value={ncLocation} onChange={(e) => setNcLocation(e.target.value)} className="bg-background/50 border-border h-9 text-sm" placeholder="Parque Araucano" />
+                </div>
+                <div>
+                  <label className="text-[9px] text-muted-foreground uppercase tracking-wider block mb-1">Instructor</label>
+                  <Input value={ncInstructor} onChange={(e) => setNcInstructor(e.target.value)} className="bg-background/50 border-border h-9 text-sm" placeholder="Coach Martín" />
+                </div>
+              </div>
+              <div>
+                <label className="text-[9px] text-muted-foreground uppercase tracking-wider block mb-1">Tema de la Clase</label>
+                <Input value={ncTopic} onChange={(e) => setNcTopic(e.target.value)} className="bg-background/50 border-border h-9 text-sm" placeholder="Pull Day — Front Lever Progressions" />
+              </div>
+              <Button className="w-full gradient-cyan text-primary-foreground font-heading font-bold uppercase tracking-wide" onClick={handleSaveNextClass}>
+                Guardar Cambios
+              </Button>
+            </div>
+          </motion.div>
+        )}
+
         {/* Workout Editor */}
         {activeTab === "workout" && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
@@ -281,10 +319,7 @@ const Admin = () => {
               {["Rutina de Entrenamiento", "Accesorios"].map((block) => (
                 <div key={block} className="space-y-1">
                   <label className="text-[9px] font-heading font-bold text-primary uppercase tracking-widest">{block}</label>
-                  <Textarea
-                    placeholder={`Ejercicios de ${block.toLowerCase()}...`}
-                    className="bg-background/50 border-border min-h-[60px] text-xs"
-                  />
+                  <Textarea placeholder={`Ejercicios de ${block.toLowerCase()}...`} className="bg-background/50 border-border min-h-[60px] text-xs" />
                 </div>
               ))}
             </div>

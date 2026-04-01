@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Flame, MapPin, Clock, User, AlertTriangle, CheckCircle, Edit3, Shield, Swords, Zap, Target, Trophy, Camera } from "lucide-react";
@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Logo from "@/components/Logo";
 import SelfAssessment from "@/components/profile/SelfAssessment";
+import { nextClassStore } from "@/lib/nextClassStore";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -22,6 +23,8 @@ const Profile = () => {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const nextClass = useSyncExternalStore(nextClassStore.subscribe, nextClassStore.get);
+
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -35,12 +38,10 @@ const Profile = () => {
 
   const overallRating = 84;
   const stats = [
-    { label: "TIR", value: 82, icon: Target },
-    { label: "EMP", value: 78, icon: Swords },
-    { label: "RES", value: 88, icon: Shield },
-    { label: "VEL", value: 76, icon: Zap },
-    { label: "COR", value: 85, icon: Flame },
-    { label: "FLE", value: 80, icon: Trophy },
+    { label: "PULL", value: 82, icon: Target },
+    { label: "PUSH", value: 78, icon: Swords },
+    { label: "CORE", value: 85, icon: Shield },
+    { label: "RES", value: 88, icon: Zap },
   ];
 
   return (
@@ -122,8 +123,8 @@ const Profile = () => {
           {/* Divider line */}
           <div className="h-[1px] bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
 
-          {/* Stats Grid */}
-          <div className="grid grid-cols-3 gap-0 divide-x divide-border/20 p-0">
+          {/* Stats Grid — 4 pillars */}
+          <div className="grid grid-cols-4 gap-0 divide-x divide-border/20 p-0">
             {stats.map((stat) => (
               <div key={stat.label} className="relative z-10 text-center py-3 px-2">
                 <div className="flex items-center justify-center gap-1.5 mb-1">
@@ -154,7 +155,7 @@ const Profile = () => {
           </div>
         </motion.div>
 
-        {/* Next Class Card */}
+        {/* Next Class Card — reads from store */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -172,33 +173,31 @@ const Profile = () => {
             <div className="grid grid-cols-2 gap-3 mb-4">
               <div className="bg-background/30 rounded-lg p-3">
                 <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">Día</p>
-                <p className="text-sm font-heading font-bold">Lunes 31 Mar</p>
+                <p className="text-sm font-heading font-bold">{nextClass.day}</p>
               </div>
               <div className="bg-background/30 rounded-lg p-3">
                 <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">Hora</p>
-                <p className="text-sm font-heading font-bold">18:00 hrs</p>
+                <p className="text-sm font-heading font-bold">{nextClass.time}</p>
               </div>
               <div className="bg-background/30 rounded-lg p-3">
                 <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1">
                   <MapPin className="w-3 h-3" /> Ubicación
                 </p>
-                <p className="text-sm font-heading font-bold">Parque Araucano</p>
+                <p className="text-sm font-heading font-bold">{nextClass.location}</p>
               </div>
               <div className="bg-background/30 rounded-lg p-3">
                 <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">Instructor</p>
-                <p className="text-sm font-heading font-bold">Coach Martín</p>
+                <p className="text-sm font-heading font-bold">{nextClass.instructor}</p>
               </div>
             </div>
 
             <div className="bg-background/30 rounded-lg p-3 mb-4">
               <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">Tema de la Clase</p>
-              <p className="text-sm font-heading font-bold">Pull Day — Front Lever Progressions</p>
+              <p className="text-sm font-heading font-bold">{nextClass.topic}</p>
             </div>
 
             <Button
-              className={`w-full font-heading font-bold uppercase tracking-wide text-sm ${
-                "gradient-cyan text-primary-foreground"
-              }`}
+              className={`w-full font-heading font-bold uppercase tracking-wide text-sm gradient-cyan text-primary-foreground`}
               onClick={() => setConfirmed(!confirmed)}
             >
               {confirmed ? (
