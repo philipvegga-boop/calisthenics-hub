@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ChevronRight, Swords, Dumbbell, Hand, Shield, Zap, Footprints, Timer } from "lucide-react";
+import { ChevronRight, Swords, Dumbbell, Hand, Shield, Timer } from "lucide-react";
 
 interface AssessmentQuestion {
   id: string;
@@ -49,32 +49,6 @@ const questions: AssessmentQuestion[] = [
       { label: "L-Sit 10s+ en paralelas", value: 6 },
       { label: "Dragon Flag controlado", value: 8 },
       { label: "Human Flag / V-Sit", value: 10 },
-    ],
-  },
-  {
-    id: "flexibility",
-    label: "Flexibilidad",
-    icon: Zap,
-    question: "Flexibilidad (comodín): ¿cómo estás hoy?",
-    options: [
-      { label: "No toco las puntas de los pies", value: 2 },
-      { label: "Toco las puntas con esfuerzo", value: 4 },
-      { label: "Palmas al piso con piernas rectas", value: 6 },
-      { label: "Pike/pancake con pecho al piso", value: 8 },
-      { label: "Splits completo / movilidad élite", value: 10 },
-    ],
-  },
-  {
-    id: "legs",
-    label: "Piernas",
-    icon: Footprints,
-    question: "Piernas: ¿cuál es tu capacidad actual?",
-    options: [
-      { label: "Sentadilla libre inestable", value: 2 },
-      { label: "Sentadilla profunda controlada", value: 4 },
-      { label: "Pistol asistida por lado", value: 6 },
-      { label: "Pistol limpia por lado", value: 8 },
-      { label: "Pistol lastrada / salto explosivo", value: 10 },
     ],
   },
   {
@@ -169,7 +143,7 @@ const SelfAssessment = () => {
           <h3 className="font-heading text-xs font-bold uppercase tracking-widest text-primary text-center mb-5">
             Pilares de Fuerza
           </h3>
-          <div className="flex items-end justify-center gap-4 h-48">
+          <div className="flex items-end justify-center gap-6 h-48">
             {questions.map((q, i) => {
               const score = scores[q.id] || 0;
               const heightPercent = (score / 10) * 100;
@@ -178,8 +152,8 @@ const SelfAssessment = () => {
 
               return (
                 <div key={q.id} className="flex flex-col items-center gap-2">
-                  <span className="text-xs font-heading font-bold text-foreground">{score}</span>
-                  <div className="w-12 h-40 rounded-t-lg bg-secondary/50 border border-border/30 relative overflow-hidden">
+                  <span className="text-sm font-heading font-bold text-foreground">{score}</span>
+                  <div className="w-14 h-40 rounded-t-lg bg-secondary/50 border border-border/30 relative overflow-hidden">
                     <motion.div
                       className={`absolute bottom-0 left-0 right-0 rounded-t-lg ${fillClass} ${isWeakest ? "opacity-70" : "opacity-95"}`}
                       initial={{ height: 0 }}
@@ -193,9 +167,9 @@ const SelfAssessment = () => {
                     )}
                   </div>
                   <div className="text-center">
-                    <q.icon className={`w-4 h-4 mx-auto mb-0.5 ${isWeakest ? "text-destructive" : "text-muted-foreground"}`} />
-                    <span className={`text-[8px] font-heading font-bold uppercase tracking-wider ${isWeakest ? "text-destructive" : "text-muted-foreground"}`}>
-                      {q.id}
+                    <q.icon className={`w-4 h-4 mx-auto mb-0.5 ${isWeakest ? "text-destructive" : "text-primary"}`} />
+                    <span className={`text-[9px] font-heading font-bold uppercase tracking-wider ${isWeakest ? "text-destructive" : "text-muted-foreground"}`}>
+                      {q.label.split(" ")[0]}
                     </span>
                   </div>
                 </div>
@@ -284,7 +258,7 @@ const SelfAssessment = () => {
             Midamos tu nivel
           </h3>
           <p className="text-xs text-muted-foreground mb-5 leading-relaxed">
-            {questions.length} preguntas rápidas para medir Tirón, Empuje, Core, Flexibilidad, Piernas y Resistencia.
+            {questions.length} preguntas rápidas para medir Tirón, Empuje, Core y Resistencia.
           </p>
           <Button
             className="gradient-cyan text-primary-foreground font-heading font-bold uppercase tracking-wide"
