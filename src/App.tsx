@@ -12,6 +12,7 @@ import Store from "./pages/Store";
 import Admin from "./pages/Admin";
 import Profile from "./pages/Profile";
 import Routines from "./pages/Routines";
+import MyBookings from "./pages/MyBookings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
