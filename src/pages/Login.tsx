@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, Mail, Lock, User } from "lucide-react";
 import Logo from "@/components/Logo";
+import { supabase } from "@/lib/supabase";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -14,11 +15,72 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Connect to Lovable Cloud auth
-    // For now, simulate login and redirect to onboarding or dashboard
-    navigate("/onboarding");
+
+    try {
+      if (isRegister) {
+        const { data: authData, error: signUpError } = await supabase.auth.signUp({
+          email,
+          password,
+        });
+
+        if (signUpError) {
+          alert(signUpError.message);
+          return;
+        }
+
+        if (authData.user) {
+          const { error: profileError } = await supabase.from("user_profiles").insert({
+            id: authData.user.id,
+            full_name: name,
+            email,
+            role: "alumno",
+            level: "principiante",
+          });
+
+          if (profileError) {
+            alert("Error al crear el perfil");
+            return;
+          }
+        }
+
+        alert("¡Cuenta creada! Por favor inicia sesión");
+        setIsRegister(false);
+        setEmail("");
+        setPassword("");
+        setName("");
+      } else {
+        const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (signInError) {
+          alert(signInError.message);
+          return;
+        }
+
+        if (authData.user) {
+          const { data: profile } = await supabase
+            .from("user_profiles")
+            .select("role")
+            .eq("id", authData.user.id)
+            .maybeSingle();
+
+          if (profile?.role === "admin") {
+            navigate("/admin-dashboard");
+          } else if (profile?.role === "coach") {
+            navigate("/coach-portal");
+          } else {
+            navigate("/student-portal");
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error inesperado");
+    }
   };
 
   return (

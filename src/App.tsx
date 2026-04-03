@@ -13,6 +13,9 @@ import Admin from "./pages/Admin";
 import Profile from "./pages/Profile";
 import Routines from "./pages/Routines";
 import MyBookings from "./pages/MyBookings";
+import AdminDashboard from "./pages/AdminDashboard";
+import StudentPortal from "./pages/StudentPortal";
+import CoachPortal from "./pages/CoachPortal";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +34,9 @@ const App = () => (
           <Route path="/booking" element={<Booking />} />
           <Route path="/store" element={<Store />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          <Route path="/student-portal" element={<StudentPortal />} />
+          <Route path="/coach-portal" element={<CoachPortal />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/routines" element={<Routines />} />
           <Route path="/my-bookings" element={<MyBookings />} />
