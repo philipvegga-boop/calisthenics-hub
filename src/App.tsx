@@ -33,6 +33,7 @@ const App = () => (
           <Route path="/admin" element={<Admin />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/routines" element={<Routines />} />
+          <Route path="/my-bookings" element={<MyBookings />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
