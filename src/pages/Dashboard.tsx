@@ -73,7 +73,7 @@ const Dashboard = () => {
             {[
               { icon: Calendar, label: "Reservar", onClick: () => navigate("/booking") },
               { icon: Dumbbell, label: "Rutina", onClick: () => document.getElementById("workout")?.scrollIntoView({ behavior: "smooth" }) },
-              { icon: Clock, label: "Mis reservas", onClick: () => document.getElementById("my-bookings")?.scrollIntoView({ behavior: "smooth" }) },
+              { icon: Clock, label: "Mis reservas", onClick: () => navigate("/my-bookings") },
             { icon: User, label: "Perfil", onClick: () => navigate("/profile") },
             { icon: ShoppingBag, label: "Tienda", onClick: () => navigate("/store") },
             { icon: BookOpen, label: "Rutinas", onClick: () => navigate("/routines") },

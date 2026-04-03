@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ChevronRight, Swords, Dumbbell, Hand, Shield, Timer } from "lucide-react";
+import { ChevronRight, ChevronLeft, Swords, Dumbbell, Hand, Shield, Timer } from "lucide-react";
+import RadarChart from "./RadarChart";
 
 interface AssessmentQuestion {
   id: string;
@@ -113,6 +114,13 @@ const SelfAssessment = () => {
 
   const weakestLabel = questions.find((q) => q.id === weakestPillar)?.label || "";
 
+  const [resultView, setResultView] = useState<"bars" | "radar">("bars");
+
+  const radarStats = questions.map((q) => ({
+    label: q.label.split(" ")[0].toUpperCase(),
+    value: scores[q.id] || 0,
+  }));
+
   if (showResults) {
     return (
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
@@ -138,45 +146,75 @@ const SelfAssessment = () => {
           </div>
         </div>
 
-        {/* Pillar Strength Bars */}
-        <div className="card-warrior rounded-xl p-5">
-          <h3 className="font-heading text-xs font-bold uppercase tracking-widest text-primary text-center mb-5">
-            Pilares de Fuerza
-          </h3>
-          <div className="flex items-end justify-center gap-6 h-48">
-            {questions.map((q, i) => {
-              const score = scores[q.id] || 0;
-              const heightPercent = (score / 10) * 100;
-              const isWeakest = q.id === weakestPillar;
-              const fillClass = score >= 8 ? "gradient-cyan" : score >= 5 ? "bg-primary/80" : "bg-primary/55";
-
-              return (
-                <div key={q.id} className="flex flex-col items-center gap-2">
-                  <span className="text-sm font-heading font-bold text-foreground">{score}</span>
-                  <div className="w-14 h-40 rounded-t-lg bg-secondary/50 border border-border/30 relative overflow-hidden">
-                    <motion.div
-                      className={`absolute bottom-0 left-0 right-0 rounded-t-lg ${fillClass} ${isWeakest ? "opacity-70" : "opacity-95"}`}
-                      initial={{ height: 0 }}
-                      animate={{ height: `${heightPercent}%` }}
-                      transition={{ duration: 1, delay: i * 0.2, ease: "easeOut" }}
-                    />
-                    {isWeakest && (
-                      <div className="absolute top-2 left-1/2 -translate-x-1/2 text-[8px] text-destructive font-bold uppercase z-10">
-                        ⚠
-                      </div>
-                    )}
-                  </div>
-                  <div className="text-center">
-                    <q.icon className={`w-4 h-4 mx-auto mb-0.5 ${isWeakest ? "text-destructive" : "text-primary"}`} />
-                    <span className={`text-[9px] font-heading font-bold uppercase tracking-wider ${isWeakest ? "text-destructive" : "text-muted-foreground"}`}>
-                      {q.label.split(" ")[0]}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+        {/* View Toggle: Bars ← → Radar */}
+        <div className="flex items-center justify-center gap-3">
+          <button
+            onClick={() => setResultView("bars")}
+            className={`text-[10px] font-heading font-bold uppercase tracking-wider px-4 py-2 rounded-lg transition-all ${
+              resultView === "bars" ? "gradient-cyan text-primary-foreground" : "text-muted-foreground bg-secondary"
+            }`}
+          >
+            Pilares
+          </button>
+          <button
+            onClick={() => setResultView("radar")}
+            className={`text-[10px] font-heading font-bold uppercase tracking-wider px-4 py-2 rounded-lg transition-all ${
+              resultView === "radar" ? "gradient-cyan text-primary-foreground" : "text-muted-foreground bg-secondary"
+            }`}
+          >
+            Radar FIFA
+          </button>
         </div>
+
+        <AnimatePresence mode="wait">
+          {resultView === "bars" ? (
+            <motion.div key="bars" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="card-warrior rounded-xl p-5">
+              <h3 className="font-heading text-xs font-bold uppercase tracking-widest text-primary text-center mb-5">
+                Pilares de Fuerza
+              </h3>
+              <div className="flex items-end justify-center gap-6 h-48">
+                {questions.map((q, i) => {
+                  const score = scores[q.id] || 0;
+                  const heightPercent = (score / 10) * 100;
+                  const isWeakest = q.id === weakestPillar;
+                  const fillClass = score >= 8 ? "gradient-cyan" : score >= 5 ? "bg-primary/80" : "bg-primary/55";
+
+                  return (
+                    <div key={q.id} className="flex flex-col items-center gap-2">
+                      <span className="text-sm font-heading font-bold text-foreground">{score}</span>
+                      <div className="w-14 h-40 rounded-t-lg bg-secondary/50 border border-border/30 relative overflow-hidden">
+                        <motion.div
+                          className={`absolute bottom-0 left-0 right-0 rounded-t-lg ${fillClass} ${isWeakest ? "opacity-70" : "opacity-95"}`}
+                          initial={{ height: 0 }}
+                          animate={{ height: `${heightPercent}%` }}
+                          transition={{ duration: 1, delay: i * 0.2, ease: "easeOut" }}
+                        />
+                        {isWeakest && (
+                          <div className="absolute top-2 left-1/2 -translate-x-1/2 text-[8px] text-destructive font-bold uppercase z-10">
+                            ⚠
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-center">
+                        <q.icon className={`w-4 h-4 mx-auto mb-0.5 ${isWeakest ? "text-destructive" : "text-primary"}`} />
+                        <span className={`text-[9px] font-heading font-bold uppercase tracking-wider ${isWeakest ? "text-destructive" : "text-muted-foreground"}`}>
+                          {q.label.split(" ")[0]}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div key="radar" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="card-warrior rounded-xl p-5">
+              <h3 className="font-heading text-xs font-bold uppercase tracking-widest text-primary text-center mb-3">
+                Radar de Poder
+              </h3>
+              <RadarChart stats={radarStats} />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Presencial Connection */}
         <div className="card-cyan rounded-xl p-4 text-center">
