@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ChevronRight, Swords, Dumbbell, Hand, Shield, Timer } from "lucide-react";
+import { ChevronRight, ChevronLeft, Swords, Dumbbell, Hand, Shield, Timer } from "lucide-react";
+import RadarChart from "./RadarChart";
 
 interface AssessmentQuestion {
   id: string;
