@@ -19,6 +19,8 @@ const tabs = [
   { id: "workout", label: "Rutina", icon: Dumbbell },
 ];
 
+const daysOfWeek = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+
 const initialUsers = [
   { id: "u1", name: "Lucas García", email: "lucas@mail.com", role: "activo" as const, registeredAt: "15 Ene 2026" },
   { id: "u2", name: "María López", email: "maria@mail.com", role: "pendiente" as const, registeredAt: "02 Mar 2026" },
@@ -36,8 +38,24 @@ const Admin = () => {
   const [newTime, setNewTime] = useState("");
   const [newEndTime, setNewEndTime] = useState("");
 
+  // Add user form
+  const [showAddUser, setShowAddUser] = useState(false);
+  const [newUserName, setNewUserName] = useState("");
+  const [newUserEmail, setNewUserEmail] = useState("");
+
   const slots = useSyncExternalStore(scheduleStore.subscribe, scheduleStore.getSlots);
   const nextClass = useSyncExternalStore(nextClassStore.subscribe, nextClassStore.get);
+
+  // Per-day scheduling
+  const [dayConfigs, setDayConfigs] = useState<Record<string, { instructor: string; location: string }>>(() => {
+    const saved = localStorage.getItem("poderestoico.dayconfigs.v1");
+    if (saved) {
+      try { return JSON.parse(saved); } catch { /* ignore */ }
+    }
+    return Object.fromEntries(daysOfWeek.map(d => [d, { instructor: "Coach Martín", location: "Parque Araucano" }]));
+  });
+
+  const [selectedDay, setSelectedDay] = useState(daysOfWeek[0]);
 
   // Local state for next class editing
   const [ncDay, setNcDay] = useState(nextClass.day);
@@ -54,6 +72,26 @@ const Admin = () => {
           : u
       )
     );
+  };
+
+  const handleAddUser = () => {
+    if (!newUserName.trim() || !newUserEmail.trim()) {
+      toast.error("Completá nombre y email");
+      return;
+    }
+    const now = new Date();
+    const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+    setUsers(prev => [...prev, {
+      id: `u${Date.now()}`,
+      name: newUserName.trim(),
+      email: newUserEmail.trim(),
+      role: "pendiente" as const,
+      registeredAt: `${now.getDate().toString().padStart(2, "0")} ${months[now.getMonth()]} ${now.getFullYear()}`,
+    }]);
+    toast.success(`${newUserName} agregado`);
+    setNewUserName("");
+    setNewUserEmail("");
+    setShowAddUser(false);
   };
 
   const filteredUsers = users.filter(u =>
@@ -81,6 +119,11 @@ const Admin = () => {
     toast("Horario eliminado");
   };
 
+  const handleSaveDayConfig = () => {
+    localStorage.setItem("poderestoico.dayconfigs.v1", JSON.stringify(dayConfigs));
+    toast.success(`Configuración de ${selectedDay} guardada`);
+  };
+
   const handleSaveNextClass = () => {
     nextClassStore.update({
       day: ncDay,
@@ -90,6 +133,13 @@ const Admin = () => {
       topic: ncTopic,
     });
     toast.success("Próxima clase actualizada");
+  };
+
+  const updateDayField = (field: "instructor" | "location", value: string) => {
+    setDayConfigs(prev => ({
+      ...prev,
+      [selectedDay]: { ...prev[selectedDay], [field]: value },
+    }));
   };
 
   return (
@@ -142,28 +192,13 @@ const Admin = () => {
                 </div>
               ))}
             </div>
-
-            <div>
-              <h3 className="font-heading text-xs font-bold uppercase tracking-wider mb-2">Horarios Configurados</h3>
-              <div className="space-y-1.5">
-                {slots.map((slot) => (
-                  <div key={slot.time} className="card-fifa rounded-lg px-4 py-2.5 flex items-center justify-between fifa-pattern">
-                    <div className="flex items-center gap-3 relative z-10">
-                      <Clock className="w-3.5 h-3.5 text-primary" />
-                      <span className="text-xs font-heading font-bold uppercase">Calistenia</span>
-                    </div>
-                    <span className="text-[10px] text-muted-foreground relative z-10">{slot.time} - {slot.endTime}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
           </motion.div>
         )}
 
         {/* Users Management */}
         {activeTab === "users" && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
@@ -173,8 +208,27 @@ const Admin = () => {
                   className="pl-9 bg-secondary border-border text-xs h-9"
                 />
               </div>
-              <span className="text-[10px] text-muted-foreground whitespace-nowrap">{users.length} total</span>
+              <Button size="sm" className="gradient-cyan text-primary-foreground h-9 px-3 font-heading font-bold uppercase text-[10px]" onClick={() => setShowAddUser(!showAddUser)}>
+                <Plus className="w-3 h-3 mr-1" /> Agregar
+              </Button>
             </div>
+
+            {/* Add User Form */}
+            {showAddUser && (
+              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="card-cyan rounded-xl p-4 space-y-3">
+                <h4 className="text-[10px] font-heading font-bold uppercase tracking-wider text-primary">Nuevo Alumno</h4>
+                <Input placeholder="Nombre completo" value={newUserName} onChange={(e) => setNewUserName(e.target.value)} className="bg-background/50 border-border h-9 text-sm" />
+                <Input placeholder="Email" value={newUserEmail} onChange={(e) => setNewUserEmail(e.target.value)} className="bg-background/50 border-border h-9 text-sm" />
+                <div className="flex gap-2">
+                  <Button size="sm" className="gradient-cyan text-primary-foreground font-heading font-bold uppercase text-[10px] flex-1" onClick={handleAddUser}>
+                    Agregar Alumno
+                  </Button>
+                  <Button variant="outline" size="sm" className="text-[10px]" onClick={() => setShowAddUser(false)}>Cancelar</Button>
+                </div>
+              </motion.div>
+            )}
+
+            <span className="text-[10px] text-muted-foreground">{users.length} total</span>
 
             <div className="space-y-2">
               {filteredUsers.map((user) => (
@@ -209,7 +263,6 @@ const Admin = () => {
         {activeTab === "schedule" && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
             <h3 className="font-heading text-xs font-bold uppercase tracking-wider">Gestión de Horarios</h3>
-            <p className="text-[10px] text-muted-foreground">Los horarios aplican para todos los días (Lunes a Sábado). Agregá o eliminá bloques horarios.</p>
 
             {/* Add new slot */}
             <div className="card-cyan rounded-xl p-4 space-y-3">
@@ -239,7 +292,7 @@ const Admin = () => {
                     <Clock className="w-4 h-4 text-primary" />
                     <div>
                       <p className="text-xs font-heading font-bold uppercase">Calistenia</p>
-                      <p className="text-[10px] text-muted-foreground">{slot.time} - {slot.endTime} · 1h · Max 20 cupos</p>
+                      <p className="text-[10px] text-muted-foreground">{slot.time} - {slot.endTime} · 1h · Max 20</p>
                     </div>
                   </div>
                   <Button variant="outline" size="sm" className="text-[10px] h-7 px-2 border-destructive/30 text-destructive hover:bg-destructive/10 relative z-10" onClick={() => handleRemoveSlot(slot.time)}>
@@ -249,13 +302,52 @@ const Admin = () => {
               ))}
             </div>
 
+            {/* Per-Day Config */}
+            <div className="card-warrior rounded-xl p-4 space-y-3">
+              <h4 className="text-[10px] font-heading font-bold uppercase tracking-wider text-primary text-center">Configuración por Día</h4>
+              <div className="flex gap-1 overflow-x-auto pb-1">
+                {daysOfWeek.map((d) => (
+                  <button
+                    key={d}
+                    onClick={() => setSelectedDay(d)}
+                    className={`px-2.5 py-1.5 rounded-lg text-[9px] font-heading font-bold uppercase tracking-wider whitespace-nowrap transition-all ${
+                      selectedDay === d ? "gradient-cyan text-primary-foreground" : "bg-secondary text-muted-foreground"
+                    }`}
+                  >
+                    {d.slice(0, 3)}
+                  </button>
+                ))}
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-[9px] text-muted-foreground uppercase block mb-1">Instructor</label>
+                  <Input
+                    value={dayConfigs[selectedDay]?.instructor || ""}
+                    onChange={(e) => updateDayField("instructor", e.target.value)}
+                    className="bg-background/50 border-border h-9 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="text-[9px] text-muted-foreground uppercase block mb-1">Ubicación</label>
+                  <Input
+                    value={dayConfigs[selectedDay]?.location || ""}
+                    onChange={(e) => updateDayField("location", e.target.value)}
+                    className="bg-background/50 border-border h-9 text-sm"
+                  />
+                </div>
+              </div>
+              <Button size="sm" className="w-full gradient-cyan text-primary-foreground font-heading font-bold uppercase text-[10px]" onClick={handleSaveDayConfig}>
+                Guardar {selectedDay}
+              </Button>
+            </div>
+
             {/* Week preview */}
             <div className="card-warrior rounded-xl p-4">
               <h4 className="text-[10px] font-heading font-bold uppercase tracking-wider text-primary mb-3 text-center">Vista Semanal</h4>
               <div className="grid grid-cols-6 gap-2">
-                {["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"].map((day) => (
+                {daysOfWeek.map((day) => (
                   <div key={day}>
-                    <p className="text-[9px] font-heading font-bold text-center mb-1.5 text-primary uppercase">{day}</p>
+                    <p className="text-[9px] font-heading font-bold text-center mb-1.5 text-primary uppercase">{day.slice(0, 3)}</p>
                     <div className="space-y-1">
                       {slots.map((slot) => (
                         <div key={slot.time} className="bg-primary/5 border border-primary/10 rounded-lg p-1 text-center">
@@ -274,7 +366,7 @@ const Admin = () => {
         {activeTab === "nextclass" && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
             <h3 className="font-heading text-xs font-bold uppercase tracking-wider">Editar Próxima Clase</h3>
-            <p className="text-[10px] text-muted-foreground">Estos datos se muestran en el perfil del alumno como "Tu Próxima Cita con el Hierro".</p>
+            <p className="text-[10px] text-muted-foreground">Estos datos se muestran en el perfil del alumno.</p>
 
             <div className="card-cyan rounded-xl p-5 space-y-4">
               <div className="grid grid-cols-2 gap-3">
@@ -288,16 +380,16 @@ const Admin = () => {
                 </div>
                 <div>
                   <label className="text-[9px] text-muted-foreground uppercase tracking-wider block mb-1">Ubicación</label>
-                  <Input value={ncLocation} onChange={(e) => setNcLocation(e.target.value)} className="bg-background/50 border-border h-9 text-sm" placeholder="Parque Araucano" />
+                  <Input value={ncLocation} onChange={(e) => setNcLocation(e.target.value)} className="bg-background/50 border-border h-9 text-sm" />
                 </div>
                 <div>
                   <label className="text-[9px] text-muted-foreground uppercase tracking-wider block mb-1">Instructor</label>
-                  <Input value={ncInstructor} onChange={(e) => setNcInstructor(e.target.value)} className="bg-background/50 border-border h-9 text-sm" placeholder="Coach Martín" />
+                  <Input value={ncInstructor} onChange={(e) => setNcInstructor(e.target.value)} className="bg-background/50 border-border h-9 text-sm" />
                 </div>
               </div>
               <div>
                 <label className="text-[9px] text-muted-foreground uppercase tracking-wider block mb-1">Tema de la Clase</label>
-                <Input value={ncTopic} onChange={(e) => setNcTopic(e.target.value)} className="bg-background/50 border-border h-9 text-sm" placeholder="Pull Day — Front Lever Progressions" />
+                <Input value={ncTopic} onChange={(e) => setNcTopic(e.target.value)} className="bg-background/50 border-border h-9 text-sm" />
               </div>
               <Button className="w-full gradient-cyan text-primary-foreground font-heading font-bold uppercase tracking-wide" onClick={handleSaveNextClass}>
                 Guardar Cambios
