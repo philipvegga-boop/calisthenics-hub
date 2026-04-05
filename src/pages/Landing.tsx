@@ -28,7 +28,7 @@ const Landing = () => {
       <section className="relative h-screen flex items-center overflow-hidden">
         <div className="absolute inset-0">
           <video
-            src={heroVideo.url}
+            src={heroVideoUrl}
             autoPlay
             loop
             muted
