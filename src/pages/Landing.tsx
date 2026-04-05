@@ -8,75 +8,76 @@ import LandingPhilosophy from "@/components/landing/LandingPhilosophy";
 import LandingCTA from "@/components/landing/LandingCTA";
 
 const heroVideoUrl = "/__l5e/assets-v1/6f827ff8-e5df-43cb-b7fe-e84242b86e1a/hero-video.mp4";
+const heroTextShadow = { textShadow: "0 12px 32px rgba(0, 0, 0, 0.55)" };
 
 const Landing = () => {
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Navbar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 border-b border-border/20" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>
-        <div className="container mx-auto px-4 h-14 flex items-center justify-between">
+      <nav className="fixed left-0 right-0 top-0 z-50 border-b border-border/20 bg-background/95">
+        <div className="container mx-auto flex h-14 items-center justify-between px-4">
           <Logo size="md" />
-          <Button size="sm" className="text-xs gradient-cyan text-primary-foreground font-bold" onClick={() => navigate("/login")}>
+          <Button size="sm" className="gradient-cyan text-xs font-bold text-primary-foreground" onClick={() => navigate("/login")}>
             Unirme
           </Button>
         </div>
       </nav>
 
-      {/* Hero with Video */}
-      <section className="relative h-screen flex items-center overflow-hidden">
-        <div className="absolute inset-0">
-          <video
-            src={heroVideoUrl}
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black/50" />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
-          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary to-transparent opacity-40" />
-        </div>
+      <section className="relative flex min-h-screen items-center overflow-hidden bg-background">
+        <div className="absolute inset-0 gradient-dark" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_hsl(var(--primary)/0.16),_transparent_36%),radial-gradient(circle_at_bottom_right,_hsl(var(--blue)/0.14),_transparent_30%)]" />
+        <video
+          src={heroVideoUrl}
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="metadata"
+          className="absolute inset-0 h-full w-full object-cover opacity-35"
+        />
+        <div className="absolute inset-0 bg-background/45" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-transparent to-background" />
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent opacity-40" />
 
-        <div className="container mx-auto px-4 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="max-w-lg mx-auto text-center"
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="flex justify-center mb-6"
-            >
+        <div className="container relative z-10 mx-auto px-4 pt-16">
+          <div className="mx-auto flex max-w-xl flex-col items-center text-center">
+            <div className="mb-5 rounded-full border border-primary/20 bg-card/70 px-4 py-1 text-[10px] font-semibold uppercase tracking-[0.35em] text-primary">
+              Calistenia presencial + rendimiento
+            </div>
+
+            <div className="mb-6 flex justify-center">
               <Logo size="lg" showText={false} />
-            </motion.div>
+            </div>
 
-            <h1 className="font-heading text-4xl md:text-6xl font-bold leading-none mb-3 uppercase tracking-wider">
-              <span className="text-gradient">PODER</span>
-              <span className="text-gradient">ESTOICO</span>
+            <h1 className="font-heading text-4xl font-bold uppercase leading-none tracking-[0.08em] text-foreground md:text-6xl" style={heroTextShadow}>
+              Tu mejor versión <span className="text-gradient">empieza hoy</span>
             </h1>
 
-            <div className="w-20 h-[1px] mx-auto my-4 bg-gradient-to-r from-transparent via-primary to-transparent" />
+            <div className="my-4 h-px w-24 bg-gradient-to-r from-transparent via-primary to-transparent" />
 
-            <p className="text-sm md:text-base text-muted-foreground mb-6 leading-relaxed px-4">
-              Fusionamos la disciplina de la Calistenia Presencial con la Inteligencia de datos para forjar guerreros. Transforma tu cuerpo y domina tu mente.
+            <p className="max-w-md px-4 text-sm leading-relaxed text-foreground/85 md:text-base" style={heroTextShadow}>
+              Fusionamos la disciplina de la calistenia presencial con una experiencia premium para forjar fuerza, control y mentalidad estoica.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-3 justify-center px-4">
+            <div className="mt-7 flex flex-col gap-3 px-4 sm:flex-row">
               <Button
                 size="lg"
-                className="gradient-cyan text-primary-foreground font-heading font-bold uppercase tracking-wide text-sm"
+                className="gradient-cyan font-heading text-sm font-bold uppercase tracking-wide text-primary-foreground"
                 onClick={() => navigate("/login")}
               >
                 Unirme a la Academia
               </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-primary/30 bg-card/60 font-heading text-sm font-bold uppercase tracking-wide text-foreground hover:bg-card"
+                onClick={() => navigate("/store")}
+              >
+                Ver planes
+              </Button>
             </div>
-          </motion.div>
+          </div>
         </div>
 
         <motion.div
@@ -84,7 +85,7 @@ const Landing = () => {
           animate={{ y: [0, 8, 0] }}
           transition={{ duration: 2, repeat: Infinity }}
         >
-          <ChevronDown className="w-5 h-5 text-primary/50" />
+          <ChevronDown className="h-5 w-5 text-primary/50" />
         </motion.div>
       </section>
 
@@ -92,9 +93,8 @@ const Landing = () => {
       <LandingFeatures />
       <LandingCTA />
 
-      {/* Footer */}
       <footer className="border-t border-border/30 py-4">
-        <div className="container mx-auto px-4 text-center text-[10px] text-muted-foreground uppercase tracking-widest">
+        <div className="container mx-auto px-4 text-center text-[10px] uppercase tracking-widest text-muted-foreground">
           © 2026 PODERESTOICO · Forjando Guerreros en Santiago
         </div>
       </footer>
