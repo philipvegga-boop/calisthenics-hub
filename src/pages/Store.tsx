@@ -179,6 +179,7 @@ const Store = () => {
               { label: "N° de Cuenta", value: bankInfo.numeroCuenta },
               { label: "RUT", value: bankInfo.rut },
               { label: "Titular", value: bankInfo.titular },
+              { label: "Email", value: bankInfo.email },
             ].map((item) => (
               <div key={item.label} className="flex items-center justify-between bg-secondary/50 rounded-lg px-4 py-3">
                 <div>
