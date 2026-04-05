@@ -15,7 +15,7 @@ const Landing = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Navbar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/20">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 border-b border-border/20" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>
         <div className="container mx-auto px-4 h-14 flex items-center justify-between">
           <Logo size="md" />
           <Button size="sm" className="text-xs gradient-cyan text-primary-foreground font-bold" onClick={() => navigate("/login")}>
