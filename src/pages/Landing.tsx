@@ -35,7 +35,7 @@ const Landing = () => {
             playsInline
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-black/70" />
+          <div className="absolute inset-0 bg-black/50" />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary to-transparent opacity-40" />
         </div>
