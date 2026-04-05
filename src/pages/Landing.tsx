@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
-import heroImage from "@/assets/hero-calisthenics.jpg";
+import heroVideo from "@/assets/hero-video.mp4.asset.json";
 import Logo from "@/components/Logo";
 import LandingFeatures from "@/components/landing/LandingFeatures";
 import LandingPhilosophy from "@/components/landing/LandingPhilosophy";
@@ -23,19 +23,19 @@ const Landing = () => {
         </div>
       </nav>
 
-      {/* Hero */}
+      {/* Hero with Video */}
       <section className="relative h-screen flex items-center overflow-hidden">
         <div className="absolute inset-0">
-          <motion.img
-            src={heroImage}
-            alt="Guerrero Estoico entrenando"
+          <video
+            src={heroVideo.url}
+            autoPlay
+            loop
+            muted
+            playsInline
             className="w-full h-full object-cover"
-            initial={{ scale: 1.1 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 20, ease: "linear", repeat: Infinity, repeatType: "reverse" }}
           />
-          <div className="absolute inset-0 bg-black/75" />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-background/50" />
+          <div className="absolute inset-0 bg-black/70" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary to-transparent opacity-40" />
         </div>
 
@@ -92,7 +92,7 @@ const Landing = () => {
       <LandingCTA />
 
       {/* Footer */}
-      <footer className="border-t border-border/30 py-5">
+      <footer className="border-t border-border/30 py-4">
         <div className="container mx-auto px-4 text-center text-[10px] text-muted-foreground uppercase tracking-widest">
           © 2026 PODERESTOICO · Forjando Guerreros en Santiago
         </div>

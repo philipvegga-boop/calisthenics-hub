@@ -53,11 +53,12 @@ const studentPlans = [
 ];
 
 const bankInfo = {
-  banco: "Banco Estado",
-  tipoCuenta: "Cuenta Vista / RUT",
-  numeroCuenta: "XXXXXXXXXXXX",
-  rut: "XX.XXX.XXX-X",
-  titular: "Nombre del Titular",
+  banco: "Mercado Pago",
+  tipoCuenta: "Cuenta Vista",
+  numeroCuenta: "1046686070",
+  rut: "20.185.927-1",
+  titular: "Philip Jorge Alexander Vega Mercado",
+  email: "philipvegga@gmail.com",
 };
 
 const whatsappNumber = "56912345678";
