@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 
 const LandingPhilosophy = () => (
-  <section id="filosofia" className="py-12 md:py-16">
+  <section id="filosofia" className="py-8 md:py-10">
     <div className="container mx-auto px-4">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
