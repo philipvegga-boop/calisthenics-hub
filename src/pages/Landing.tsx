@@ -2,11 +2,12 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
-import heroVideo from "@/assets/hero-video.mp4.asset.json";
 import Logo from "@/components/Logo";
 import LandingFeatures from "@/components/landing/LandingFeatures";
 import LandingPhilosophy from "@/components/landing/LandingPhilosophy";
 import LandingCTA from "@/components/landing/LandingCTA";
+
+const heroVideoUrl = "/__l5e/assets-v1/6f827ff8-e5df-43cb-b7fe-e84242b86e1a/hero-video.mp4";
 
 const Landing = () => {
   const navigate = useNavigate();
