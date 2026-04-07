@@ -9,7 +9,7 @@ import { supabase } from "@/lib/supabase";
 interface CoachClass {
   id: string;
   class_id: string;
-  class: {
+  classes: {
     id: string;
     name: string;
     day_of_week: string;
@@ -21,10 +21,10 @@ interface CoachClass {
 interface ClassReservation {
   id: string;
   user_id: string;
-  user: {
+  user_profiles: {
     full_name: string;
     level: string;
-  };
+  } | null;
   class_id: string;
   status: string;
 }
@@ -189,9 +189,9 @@ const CoachPortal = () => {
                 className="card-fifa rounded-xl p-4 fifa-pattern relative z-10 flex justify-between items-center"
               >
                 <div>
-                  <p className="font-heading font-bold">{assignment.class?.name}</p>
+                  <p className="font-heading font-bold">{assignment.classes?.name}</p>
                   <p className="text-xs text-muted-foreground">
-                    {assignment.class?.day_of_week} · {assignment.class?.start_time}-{assignment.class?.end_time}
+                    {assignment.classes?.day_of_week} · {assignment.classes?.start_time}-{assignment.classes?.end_time}
                   </p>
                 </div>
                 <Button
@@ -210,7 +210,7 @@ const CoachPortal = () => {
             {selectedClass ? (
               <div className="space-y-3">
                 <p className="text-sm text-muted-foreground">
-                  Clase seleccionada: {coachClasses.find(c => c.class_id === selectedClass)?.class?.name}
+                  Clase seleccionada: {coachClasses.find(c => c.class_id === selectedClass)?.classes?.name}
                 </p>
                 {classReservations.length === 0 ? (
                   <p className="text-center text-muted-foreground">No hay reservas para esta clase</p>
@@ -223,8 +223,8 @@ const CoachPortal = () => {
                       className="card-fifa rounded-xl p-4 fifa-pattern relative z-10 flex justify-between items-center"
                     >
                       <div>
-                        <p className="font-heading font-bold">{res.user?.full_name}</p>
-                        <p className="text-xs text-muted-foreground">Nivel: {res.user?.level}</p>
+                        <p className="font-heading font-bold">{res.user_profiles?.full_name}</p>
+                        <p className="text-xs text-muted-foreground">Nivel: {res.user_profiles?.level}</p>
                       </div>
                       <Button
                         size="sm"
