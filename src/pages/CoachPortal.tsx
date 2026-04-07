@@ -95,11 +95,24 @@ const CoachPortal = () => {
       try {
         const { data } = await supabase
           .from("class_reservations")
-          .select("*, user_profiles(*)")
+          .select("*")
           .eq("class_id", selectedClass)
           .eq("status", "confirmed");
 
-        if (data) setClassReservations(data);
+        if (data) {
+          // Fetch user profiles for each reservation
+          const userIds = data.map(r => r.user_id);
+          const { data: profiles } = await supabase
+            .from("user_profiles")
+            .select("id, full_name, level")
+            .in("id", userIds);
+
+          const enriched = data.map(r => ({
+            ...r,
+            user_profiles: profiles?.find(p => p.id === r.user_id) || null,
+          })) as ClassReservation[];
+          setClassReservations(enriched);
+        }
       } catch (error) {
         console.error("Error fetching reservations:", error);
       }
@@ -125,11 +138,23 @@ const CoachPortal = () => {
       // Refresh reservations
       const { data } = await supabase
         .from("class_reservations")
-        .select("*, user_profiles(*)")
+        .select("*")
         .eq("class_id", selectedClass)
         .eq("status", "confirmed");
 
-      if (data) setClassReservations(data);
+      if (data) {
+        const userIds = data.map(r => r.user_id);
+        const { data: profiles } = await supabase
+          .from("user_profiles")
+          .select("id, full_name, level")
+          .in("id", userIds);
+
+        const enriched = data.map(r => ({
+          ...r,
+          user_profiles: profiles?.find(p => p.id === r.user_id) || null,
+        })) as ClassReservation[];
+        setClassReservations(enriched);
+      }
     } catch (error) {
       console.error("Error marking attendance:", error);
     }
