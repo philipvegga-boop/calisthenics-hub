@@ -14,6 +14,83 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_config: {
+        Row: {
+          account_number: string
+          account_type: string
+          admin_id: string
+          bank_name: string
+          created_at: string
+          email: string
+          holder_name: string
+          id: string
+          rut: string
+          updated_at: string
+          whatsapp_number: string
+        }
+        Insert: {
+          account_number?: string
+          account_type?: string
+          admin_id: string
+          bank_name?: string
+          created_at?: string
+          email?: string
+          holder_name?: string
+          id?: string
+          rut?: string
+          updated_at?: string
+          whatsapp_number?: string
+        }
+        Update: {
+          account_number?: string
+          account_type?: string
+          admin_id?: string
+          bank_name?: string
+          created_at?: string
+          email?: string
+          holder_name?: string
+          id?: string
+          rut?: string
+          updated_at?: string
+          whatsapp_number?: string
+        }
+        Relationships: []
+      }
+      attendance: {
+        Row: {
+          attendance_date: string
+          class_id: string
+          created_at: string
+          id: string
+          marked_by: string | null
+          user_id: string
+        }
+        Insert: {
+          attendance_date?: string
+          class_id: string
+          created_at?: string
+          id?: string
+          marked_by?: string | null
+          user_id: string
+        }
+        Update: {
+          attendance_date?: string
+          class_id?: string
+          created_at?: string
+          id?: string
+          marked_by?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attendance_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       class_reservations: {
         Row: {
           class_id: string
@@ -87,6 +164,38 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      coach_assignments: {
+        Row: {
+          class_id: string
+          coach_id: string
+          created_at: string
+          id: string
+          is_active: boolean
+        }
+        Insert: {
+          class_id: string
+          coach_id: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+        }
+        Update: {
+          class_id?: string
+          coach_id?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coach_assignments_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       training_routines: {
         Row: {
