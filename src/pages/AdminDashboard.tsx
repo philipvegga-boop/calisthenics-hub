@@ -179,7 +179,7 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleUpdateUserRole = async (userId: string, newRole: string) => {
+  const handleUpdateUserRole = async (userId: string, newRole: "admin" | "alumno" | "coach") => {
     try {
       const { error } = await supabase
         .from("user_profiles")
@@ -427,7 +427,7 @@ const AdminDashboard = () => {
                       <td className="p-3">
                         <select
                           value={user.role}
-                          onChange={(e) => handleUpdateUserRole(user.id, e.target.value)}
+                          onChange={(e) => handleUpdateUserRole(user.id, e.target.value as "admin" | "alumno" | "coach")}
                           className="px-2 py-1 rounded bg-secondary border border-border text-xs"
                         >
                           <option value="alumno">Alumno</option>

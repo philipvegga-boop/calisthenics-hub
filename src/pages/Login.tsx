@@ -20,29 +20,17 @@ const Login = () => {
 
     try {
       if (isRegister) {
-        const { data: authData, error: signUpError } = await supabase.auth.signUp({
+        const { error: signUpError } = await supabase.auth.signUp({
           email,
           password,
+          options: {
+            data: { full_name: name },
+          },
         });
 
         if (signUpError) {
           alert(signUpError.message);
           return;
-        }
-
-        if (authData.user) {
-          const { error: profileError } = await supabase.from("user_profiles").insert({
-            id: authData.user.id,
-            full_name: name,
-            email,
-            role: "alumno",
-            level: "principiante",
-          });
-
-          if (profileError) {
-            alert("Error al crear el perfil");
-            return;
-          }
         }
 
         alert("¡Cuenta creada! Por favor inicia sesión");

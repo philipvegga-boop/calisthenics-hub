@@ -9,7 +9,7 @@ import { supabase } from "@/lib/supabase";
 interface CoachClass {
   id: string;
   class_id: string;
-  class: {
+  classes: {
     id: string;
     name: string;
     day_of_week: string;
@@ -21,10 +21,10 @@ interface CoachClass {
 interface ClassReservation {
   id: string;
   user_id: string;
-  user: {
+  user_profiles: {
     full_name: string;
     level: string;
-  };
+  } | null;
   class_id: string;
   status: string;
 }
@@ -95,11 +95,24 @@ const CoachPortal = () => {
       try {
         const { data } = await supabase
           .from("class_reservations")
-          .select("*, user_profiles(*)")
+          .select("*")
           .eq("class_id", selectedClass)
           .eq("status", "confirmed");
 
-        if (data) setClassReservations(data);
+        if (data) {
+          // Fetch user profiles for each reservation
+          const userIds = data.map(r => r.user_id);
+          const { data: profiles } = await supabase
+            .from("user_profiles")
+            .select("id, full_name, level")
+            .in("id", userIds);
+
+          const enriched = data.map(r => ({
+            ...r,
+            user_profiles: profiles?.find(p => p.id === r.user_id) || null,
+          })) as ClassReservation[];
+          setClassReservations(enriched);
+        }
       } catch (error) {
         console.error("Error fetching reservations:", error);
       }
@@ -125,11 +138,23 @@ const CoachPortal = () => {
       // Refresh reservations
       const { data } = await supabase
         .from("class_reservations")
-        .select("*, user_profiles(*)")
+        .select("*")
         .eq("class_id", selectedClass)
         .eq("status", "confirmed");
 
-      if (data) setClassReservations(data);
+      if (data) {
+        const userIds = data.map(r => r.user_id);
+        const { data: profiles } = await supabase
+          .from("user_profiles")
+          .select("id, full_name, level")
+          .in("id", userIds);
+
+        const enriched = data.map(r => ({
+          ...r,
+          user_profiles: profiles?.find(p => p.id === r.user_id) || null,
+        })) as ClassReservation[];
+        setClassReservations(enriched);
+      }
     } catch (error) {
       console.error("Error marking attendance:", error);
     }
@@ -189,9 +214,9 @@ const CoachPortal = () => {
                 className="card-fifa rounded-xl p-4 fifa-pattern relative z-10 flex justify-between items-center"
               >
                 <div>
-                  <p className="font-heading font-bold">{assignment.class?.name}</p>
+                  <p className="font-heading font-bold">{assignment.classes?.name}</p>
                   <p className="text-xs text-muted-foreground">
-                    {assignment.class?.day_of_week} · {assignment.class?.start_time}-{assignment.class?.end_time}
+                    {assignment.classes?.day_of_week} · {assignment.classes?.start_time}-{assignment.classes?.end_time}
                   </p>
                 </div>
                 <Button
@@ -210,7 +235,7 @@ const CoachPortal = () => {
             {selectedClass ? (
               <div className="space-y-3">
                 <p className="text-sm text-muted-foreground">
-                  Clase seleccionada: {coachClasses.find(c => c.class_id === selectedClass)?.class?.name}
+                  Clase seleccionada: {coachClasses.find(c => c.class_id === selectedClass)?.classes?.name}
                 </p>
                 {classReservations.length === 0 ? (
                   <p className="text-center text-muted-foreground">No hay reservas para esta clase</p>
@@ -223,8 +248,8 @@ const CoachPortal = () => {
                       className="card-fifa rounded-xl p-4 fifa-pattern relative z-10 flex justify-between items-center"
                     >
                       <div>
-                        <p className="font-heading font-bold">{res.user?.full_name}</p>
-                        <p className="text-xs text-muted-foreground">Nivel: {res.user?.level}</p>
+                        <p className="font-heading font-bold">{res.user_profiles?.full_name}</p>
+                        <p className="text-xs text-muted-foreground">Nivel: {res.user_profiles?.level}</p>
                       </div>
                       <Button
                         size="sm"

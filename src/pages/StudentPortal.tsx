@@ -20,7 +20,7 @@ interface Class {
 interface Reservation {
   id: string;
   class_id: string;
-  class: Class;
+  classes: Class;
   reservation_date: string;
   status: string;
 }
@@ -235,9 +235,9 @@ const StudentPortal = () => {
                   className="card-fifa rounded-xl p-4 fifa-pattern relative z-10 flex justify-between items-center"
                 >
                   <div>
-                    <p className="font-heading font-bold">{res.class?.name}</p>
+                    <p className="font-heading font-bold">{res.classes?.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {res.class?.day_of_week} · {res.class?.start_time}-{res.class?.end_time}
+                      {res.classes?.day_of_week} · {res.classes?.start_time}-{res.classes?.end_time}
                     </p>
                   </div>
                   <Button
