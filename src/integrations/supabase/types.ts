@@ -14,16 +14,176 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      class_reservations: {
+        Row: {
+          class_id: string
+          created_at: string
+          id: string
+          reservation_date: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          class_id: string
+          created_at?: string
+          id?: string
+          reservation_date?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          class_id?: string
+          created_at?: string
+          id?: string
+          reservation_date?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_reservations_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      classes: {
+        Row: {
+          created_at: string
+          current_capacity: number
+          day_of_week: string
+          end_time: string
+          id: string
+          is_active: boolean
+          max_capacity: number
+          name: string
+          start_time: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          current_capacity?: number
+          day_of_week: string
+          end_time: string
+          id?: string
+          is_active?: boolean
+          max_capacity?: number
+          name?: string
+          start_time: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          current_capacity?: number
+          day_of_week?: string
+          end_time?: string
+          id?: string
+          is_active?: boolean
+          max_capacity?: number
+          name?: string
+          start_time?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      training_routines: {
+        Row: {
+          created_at: string
+          description: string | null
+          group_type: string
+          id: string
+          level: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          group_type?: string
+          id?: string
+          level?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          group_type?: string
+          id?: string
+          level?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      user_profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          is_active: boolean
+          level: string
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          id: string
+          is_active?: boolean
+          level?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          is_active?: boolean
+          level?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "coach" | "alumno"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +310,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "coach", "alumno"],
+    },
   },
 } as const
