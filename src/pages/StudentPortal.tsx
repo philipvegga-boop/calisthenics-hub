@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CircleAlert as AlertCircle, LogOut, Calendar, Dumbbell, CircleCheck as CheckCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/lib/supabase";
+import { useAuthReady } from "@/hooks/use-auth-ready";
 
 interface Class {
   id: string;
@@ -40,6 +41,7 @@ interface Routine {
 
 const StudentPortal = () => {
   const navigate = useNavigate();
+  const { user: authUser, isReady } = useAuthReady();
   const [user, setUser] = useState<UserProfile | null>(null);
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
@@ -47,13 +49,17 @@ const StudentPortal = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!isReady) return;
+
     const fetchData = async () => {
+      if (!authUser) {
+        setLoading(false);
+        navigate("/login");
+        return;
+      }
+
       try {
-        const { data: { user: authUser } } = await supabase.auth.getUser();
-        if (!authUser) {
-          navigate("/login");
-          return;
-        }
+        setLoading(true);
 
         // Fetch user profile
         const { data: profile } = await supabase
@@ -81,6 +87,10 @@ const StudentPortal = () => {
             .eq("level", profile.level);
 
           if (routinesData) setRoutines(routinesData);
+        } else {
+          setUser(null);
+          setReservations([]);
+          setRoutines([]);
         }
 
         // Fetch available classes
@@ -97,13 +107,15 @@ const StudentPortal = () => {
       }
     };
 
-    fetchData();
-  }, [navigate]);
+    void fetchData();
+  }, [authUser, isReady, navigate]);
 
   const handleReserveClass = async (classId: string) => {
     try {
-      const { data: { user: authUser } } = await supabase.auth.getUser();
-      if (!authUser) return;
+      if (!authUser) {
+        navigate("/login");
+        return;
+      }
 
       // Check if already reserved
       const existing = reservations.find(r => r.class_id === classId);

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LogOut, Calendar, Users, CircleCheck as CheckCircle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { useAuthReady } from "@/hooks/use-auth-ready";
 
 interface CoachClass {
   id: string;
@@ -35,6 +36,7 @@ interface UserProfile {
 
 const CoachPortal = () => {
   const navigate = useNavigate();
+  const { user: authUser, isReady } = useAuthReady();
   const [user, setUser] = useState<UserProfile | null>(null);
   const [coachClasses, setCoachClasses] = useState<CoachClass[]>([]);
   const [classReservations, setClassReservations] = useState<ClassReservation[]>([]);
@@ -42,14 +44,16 @@ const CoachPortal = () => {
   const [selectedClass, setSelectedClass] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const { data: { user: authUser } } = await supabase.auth.getUser();
-        if (!authUser) {
-          navigate("/login");
-          return;
-        }
+    if (!isReady) return;
 
+    const fetchData = async () => {
+      if (!authUser) {
+        setLoading(false);
+        navigate("/login");
+        return;
+      }
+
+      try {
         // Check if user is coach
         const { data: profile } = await supabase
           .from("user_profiles")
@@ -84,8 +88,8 @@ const CoachPortal = () => {
       }
     };
 
-    fetchData();
-  }, [navigate]);
+    void fetchData();
+  }, [authUser, isReady, navigate]);
 
   // Fetch reservations when selected class changes
   useEffect(() => {
@@ -123,7 +127,6 @@ const CoachPortal = () => {
 
   const handleMarkAttendance = async (userId: string) => {
     try {
-      const { data: { user: authUser } } = await supabase.auth.getUser();
       if (!authUser || !selectedClass) return;
 
       const { error } = await supabase.from("attendance").insert({
