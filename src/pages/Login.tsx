@@ -14,17 +14,53 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const getRedirectPath = async (userId: string) => {
+    const { data: roleRows } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId)
+      .limit(1);
+
+    const role = roleRows?.[0]?.role;
+
+    if (role === "admin") return "/admin-dashboard";
+    if (role === "coach") return "/coach-portal";
+
+    const { data: profile } = await supabase
+      .from("user_profiles")
+      .select("role")
+      .eq("id", userId)
+      .maybeSingle();
+
+    if (profile?.role === "admin") return "/admin-dashboard";
+    if (profile?.role === "coach") return "/coach-portal";
+
+    return "/student-portal";
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const trimmedEmail = email.trim();
+    const trimmedName = name.trim();
+
+    if (!trimmedEmail || !password || (isRegister && !trimmedName)) {
+      alert("Completa todos los campos antes de continuar");
+      return;
+    }
+
+    setIsSubmitting(true);
+
     try {
       if (isRegister) {
         const { error: signUpError } = await supabase.auth.signUp({
-          email,
+          email: trimmedEmail,
           password,
           options: {
-            data: { full_name: name },
+            data: { full_name: trimmedName },
+            emailRedirectTo: window.location.origin,
           },
         });
 
@@ -33,14 +69,14 @@ const Login = () => {
           return;
         }
 
-        alert("¡Cuenta creada! Por favor inicia sesión");
+        alert("Cuenta creada. Revisa tu correo para confirmar tu cuenta antes de iniciar sesión.");
         setIsRegister(false);
         setEmail("");
         setPassword("");
         setName("");
       } else {
         const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
-          email,
+          email: trimmedEmail,
           password,
         });
 
@@ -50,24 +86,15 @@ const Login = () => {
         }
 
         if (authData.user) {
-          const { data: profile } = await supabase
-            .from("user_profiles")
-            .select("role")
-            .eq("id", authData.user.id)
-            .maybeSingle();
-
-          if (profile?.role === "admin") {
-            navigate("/admin-dashboard");
-          } else if (profile?.role === "coach") {
-            navigate("/coach-portal");
-          } else {
-            navigate("/student-portal");
-          }
+          const redirectPath = await getRedirectPath(authData.user.id);
+          navigate(redirectPath);
         }
       }
     } catch (error) {
       console.error("Error:", error);
       alert("Error inesperado");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -107,6 +134,7 @@ const Login = () => {
                     placeholder="Tu nombre"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
+                    disabled={isSubmitting}
                     className="pl-10 bg-secondary border-border"
                   />
                 </div>
@@ -123,6 +151,7 @@ const Login = () => {
                   placeholder="tu@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  disabled={isSubmitting}
                   className="pl-10 bg-secondary border-border"
                 />
               </div>
@@ -138,19 +167,21 @@ const Login = () => {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  disabled={isSubmitting}
                   className="pl-10 bg-secondary border-border"
                 />
               </div>
             </div>
 
-            <Button variant="hero" className="w-full" type="submit">
-              {isRegister ? "Crear Cuenta" : "Iniciar Sesión"}
+            <Button variant="hero" className="w-full" type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Procesando..." : isRegister ? "Crear Cuenta" : "Iniciar Sesión"}
             </Button>
           </form>
 
           <div className="mt-6 text-center">
             <button
               onClick={() => setIsRegister(!isRegister)}
+              disabled={isSubmitting}
               className="text-sm text-muted-foreground hover:text-primary transition-colors"
             >
               {isRegister

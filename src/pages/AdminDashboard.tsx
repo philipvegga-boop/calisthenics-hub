@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CircleAlert as AlertCircle, Plus, CreditCard as Edit2, Trash2, LogOut, Users, Calendar, BookOpen } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/lib/supabase";
+import { useAuthReady } from "@/hooks/use-auth-ready";
 
 interface Class {
   id: string;
@@ -39,6 +40,7 @@ interface AdminConfig {
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  const { user: authUser, isReady } = useAuthReady();
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [classes, setClasses] = useState<Class[]>([]);
@@ -63,21 +65,25 @@ const AdminDashboard = () => {
   });
 
   useEffect(() => {
-    const checkAdminAndFetchData = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-          navigate("/login");
-          return;
-        }
+    if (!isReady) return;
 
+    const checkAdminAndFetchData = async () => {
+      if (!authUser) {
+        setLoading(false);
+        navigate("/login");
+        return;
+      }
+
+      try {
         const { data: profile } = await supabase
           .from("user_profiles")
           .select("*")
-          .eq("id", user.id)
+          .eq("id", authUser.id)
           .maybeSingle();
 
         if (profile?.role !== "admin") {
+          setIsAdmin(false);
+          setLoading(false);
           navigate("/dashboard");
           return;
         }
@@ -114,8 +120,8 @@ const AdminDashboard = () => {
       }
     };
 
-    checkAdminAndFetchData();
-  }, [navigate]);
+    void checkAdminAndFetchData();
+  }, [authUser, isReady, navigate]);
 
   const handleAddClass = async () => {
     try {
