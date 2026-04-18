@@ -55,7 +55,7 @@ const Login = () => {
 
     try {
       if (isRegister) {
-        const { error: signUpError } = await supabase.auth.signUp({
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
           email: trimmedEmail,
           password,
           options: {
@@ -65,15 +65,32 @@ const Login = () => {
         });
 
         if (signUpError) {
-          alert(signUpError.message);
+          if (signUpError.message.toLowerCase().includes("already")) {
+            alert("Este email ya está registrado. Iniciá sesión en su lugar.");
+            setIsRegister(false);
+          } else {
+            alert(`Error al crear cuenta: ${signUpError.message}`);
+          }
           return;
         }
 
-        alert("Cuenta creada. Revisa tu correo para confirmar tu cuenta antes de iniciar sesión.");
-        setIsRegister(false);
-        setEmail("");
-        setPassword("");
-        setName("");
+        // Auto-confirm activado: intentar login directo
+        if (signUpData.user) {
+          const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
+            email: trimmedEmail,
+            password,
+          });
+
+          if (loginError || !loginData.user) {
+            alert("Cuenta creada. Iniciá sesión ahora.");
+            setIsRegister(false);
+            setPassword("");
+            return;
+          }
+
+          const redirectPath = await getRedirectPath(loginData.user.id);
+          navigate(redirectPath);
+        }
       } else {
         const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
           email: trimmedEmail,
@@ -81,7 +98,14 @@ const Login = () => {
         });
 
         if (signInError) {
-          alert(signInError.message);
+          const msg = signInError.message.toLowerCase();
+          if (msg.includes("invalid")) {
+            alert("Email o contraseña incorrectos. Si no tenés cuenta, registrate primero.");
+          } else if (msg.includes("not confirmed")) {
+            alert("Tu cuenta no está confirmada. Contactá al administrador.");
+          } else {
+            alert(`Error: ${signInError.message}`);
+          }
           return;
         }
 
