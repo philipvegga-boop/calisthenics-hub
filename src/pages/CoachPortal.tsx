@@ -33,6 +33,32 @@ interface UserProfile {
   full_name: string;
 }
 
+const loadClassReservations = async (classId: string): Promise<ClassReservation[]> => {
+  const { data: reservations, error } = await supabase
+    .from("class_reservations")
+    .select("*")
+    .eq("class_id", classId)
+    .eq("status", "confirmed");
+  if (error) throw error;
+  if (!reservations || reservations.length === 0) return [];
+
+  const { data: profiles } = await supabase
+    .from("user_profiles")
+    .select("id, full_name, level")
+    .in("id", reservations.map((r) => r.user_id));
+
+  return reservations.map((r) => {
+    const profile = profiles?.find((p) => p.id === r.user_id);
+    return {
+      id: r.id,
+      user_id: r.user_id,
+      class_id: r.class_id,
+      status: r.status,
+      user: { full_name: profile?.full_name ?? "Alumno", level: profile?.level ?? "" },
+    };
+  });
+};
+
 const CoachPortal = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -72,7 +98,9 @@ const CoachPortal = () => {
           .eq("is_active", true);
 
         if (coachData) {
-          setCoachClasses(coachData);
+          setCoachClasses(
+            coachData.map((a) => ({ id: a.id, class_id: a.class_id, class: a.classes }))
+          );
           if (coachData.length > 0) {
             setSelectedClass(coachData[0].class_id);
           }
@@ -93,13 +121,7 @@ const CoachPortal = () => {
       if (!selectedClass) return;
 
       try {
-        const { data } = await supabase
-          .from("class_reservations")
-          .select("*, user_profiles(*)")
-          .eq("class_id", selectedClass)
-          .eq("status", "confirmed");
-
-        if (data) setClassReservations(data);
+        setClassReservations(await loadClassReservations(selectedClass));
       } catch (error) {
         console.error("Error fetching reservations:", error);
       }
@@ -123,13 +145,7 @@ const CoachPortal = () => {
       if (error) throw error;
 
       // Refresh reservations
-      const { data } = await supabase
-        .from("class_reservations")
-        .select("*, user_profiles(*)")
-        .eq("class_id", selectedClass)
-        .eq("status", "confirmed");
-
-      if (data) setClassReservations(data);
+      setClassReservations(await loadClassReservations(selectedClass));
     } catch (error) {
       console.error("Error marking attendance:", error);
     }

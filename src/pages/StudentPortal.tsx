@@ -72,7 +72,7 @@ const StudentPortal = () => {
             .eq("user_id", authUser.id)
             .eq("status", "confirmed");
 
-          if (reservationsData) setReservations(reservationsData);
+          if (reservationsData) setReservations(reservationsData.map((r) => ({ ...r, class: r.classes })));
 
           // Fetch routines for their level
           const { data: routinesData } = await supabase
@@ -140,7 +140,7 @@ const StudentPortal = () => {
         .eq("user_id", authUser.id)
         .eq("status", "confirmed");
 
-      if (reservationsData) setReservations(reservationsData);
+      if (reservationsData) setReservations(reservationsData.map((r) => ({ ...r, class: r.classes })));
     } catch (error) {
       console.error("Error reserving class:", error);
     }

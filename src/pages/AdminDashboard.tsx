@@ -179,7 +179,7 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleUpdateUserRole = async (userId: string, newRole: string) => {
+  const handleUpdateUserRole = async (userId: string, newRole: "admin" | "coach" | "alumno") => {
     try {
       const { error } = await supabase
         .from("user_profiles")
