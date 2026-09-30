@@ -6,7 +6,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CircleAlert as AlertCircle, LogOut, Calendar, Dumbbell, CircleCheck as CheckCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/lib/supabase";
-import { useAuthReady } from "@/hooks/use-auth-ready";
 
 interface Class {
   id: string;
@@ -21,7 +20,7 @@ interface Class {
 interface Reservation {
   id: string;
   class_id: string;
-  classes: Class;
+  class: Class;
   reservation_date: string;
   status: string;
 }
@@ -41,7 +40,6 @@ interface Routine {
 
 const StudentPortal = () => {
   const navigate = useNavigate();
-  const { user: authUser, isReady } = useAuthReady();
   const [user, setUser] = useState<UserProfile | null>(null);
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
@@ -49,17 +47,13 @@ const StudentPortal = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!isReady) return;
-
     const fetchData = async () => {
-      if (!authUser) {
-        setLoading(false);
-        navigate("/login");
-        return;
-      }
-
       try {
-        setLoading(true);
+        const { data: { user: authUser } } = await supabase.auth.getUser();
+        if (!authUser) {
+          navigate("/login");
+          return;
+        }
 
         // Fetch user profile
         const { data: profile } = await supabase
@@ -78,7 +72,7 @@ const StudentPortal = () => {
             .eq("user_id", authUser.id)
             .eq("status", "confirmed");
 
-          if (reservationsData) setReservations(reservationsData);
+          if (reservationsData) setReservations(reservationsData.map((r) => ({ ...r, class: r.classes })));
 
           // Fetch routines for their level
           const { data: routinesData } = await supabase
@@ -87,10 +81,6 @@ const StudentPortal = () => {
             .eq("level", profile.level);
 
           if (routinesData) setRoutines(routinesData);
-        } else {
-          setUser(null);
-          setReservations([]);
-          setRoutines([]);
         }
 
         // Fetch available classes
@@ -107,15 +97,13 @@ const StudentPortal = () => {
       }
     };
 
-    void fetchData();
-  }, [authUser, isReady, navigate]);
+    fetchData();
+  }, [navigate]);
 
   const handleReserveClass = async (classId: string) => {
     try {
-      if (!authUser) {
-        navigate("/login");
-        return;
-      }
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (!authUser) return;
 
       // Check if already reserved
       const existing = reservations.find(r => r.class_id === classId);
@@ -152,7 +140,7 @@ const StudentPortal = () => {
         .eq("user_id", authUser.id)
         .eq("status", "confirmed");
 
-      if (reservationsData) setReservations(reservationsData);
+      if (reservationsData) setReservations(reservationsData.map((r) => ({ ...r, class: r.classes })));
     } catch (error) {
       console.error("Error reserving class:", error);
     }
@@ -247,9 +235,9 @@ const StudentPortal = () => {
                   className="card-fifa rounded-xl p-4 fifa-pattern relative z-10 flex justify-between items-center"
                 >
                   <div>
-                    <p className="font-heading font-bold">{res.classes?.name}</p>
+                    <p className="font-heading font-bold">{res.class?.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {res.classes?.day_of_week} · {res.classes?.start_time}-{res.classes?.end_time}
+                      {res.class?.day_of_week} · {res.class?.start_time}-{res.class?.end_time}
                     </p>
                   </div>
                   <Button

@@ -5,12 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LogOut, Calendar, Users, CircleCheck as CheckCircle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { useAuthReady } from "@/hooks/use-auth-ready";
 
 interface CoachClass {
   id: string;
   class_id: string;
-  classes: {
+  class: {
     id: string;
     name: string;
     day_of_week: string;
@@ -22,10 +21,10 @@ interface CoachClass {
 interface ClassReservation {
   id: string;
   user_id: string;
-  user_profiles: {
+  user: {
     full_name: string;
     level: string;
-  } | null;
+  };
   class_id: string;
   status: string;
 }
@@ -34,9 +33,34 @@ interface UserProfile {
   full_name: string;
 }
 
+const loadClassReservations = async (classId: string): Promise<ClassReservation[]> => {
+  const { data: reservations, error } = await supabase
+    .from("class_reservations")
+    .select("*")
+    .eq("class_id", classId)
+    .eq("status", "confirmed");
+  if (error) throw error;
+  if (!reservations || reservations.length === 0) return [];
+
+  const { data: profiles } = await supabase
+    .from("user_profiles")
+    .select("id, full_name, level")
+    .in("id", reservations.map((r) => r.user_id));
+
+  return reservations.map((r) => {
+    const profile = profiles?.find((p) => p.id === r.user_id);
+    return {
+      id: r.id,
+      user_id: r.user_id,
+      class_id: r.class_id,
+      status: r.status,
+      user: { full_name: profile?.full_name ?? "Alumno", level: profile?.level ?? "" },
+    };
+  });
+};
+
 const CoachPortal = () => {
   const navigate = useNavigate();
-  const { user: authUser, isReady } = useAuthReady();
   const [user, setUser] = useState<UserProfile | null>(null);
   const [coachClasses, setCoachClasses] = useState<CoachClass[]>([]);
   const [classReservations, setClassReservations] = useState<ClassReservation[]>([]);
@@ -44,16 +68,14 @@ const CoachPortal = () => {
   const [selectedClass, setSelectedClass] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isReady) return;
-
     const fetchData = async () => {
-      if (!authUser) {
-        setLoading(false);
-        navigate("/login");
-        return;
-      }
-
       try {
+        const { data: { user: authUser } } = await supabase.auth.getUser();
+        if (!authUser) {
+          navigate("/login");
+          return;
+        }
+
         // Check if user is coach
         const { data: profile } = await supabase
           .from("user_profiles")
@@ -76,7 +98,9 @@ const CoachPortal = () => {
           .eq("is_active", true);
 
         if (coachData) {
-          setCoachClasses(coachData);
+          setCoachClasses(
+            coachData.map((a) => ({ id: a.id, class_id: a.class_id, class: a.classes }))
+          );
           if (coachData.length > 0) {
             setSelectedClass(coachData[0].class_id);
           }
@@ -88,8 +112,8 @@ const CoachPortal = () => {
       }
     };
 
-    void fetchData();
-  }, [authUser, isReady, navigate]);
+    fetchData();
+  }, [navigate]);
 
   // Fetch reservations when selected class changes
   useEffect(() => {
@@ -97,26 +121,7 @@ const CoachPortal = () => {
       if (!selectedClass) return;
 
       try {
-        const { data } = await supabase
-          .from("class_reservations")
-          .select("*")
-          .eq("class_id", selectedClass)
-          .eq("status", "confirmed");
-
-        if (data) {
-          // Fetch user profiles for each reservation
-          const userIds = data.map(r => r.user_id);
-          const { data: profiles } = await supabase
-            .from("user_profiles")
-            .select("id, full_name, level")
-            .in("id", userIds);
-
-          const enriched = data.map(r => ({
-            ...r,
-            user_profiles: profiles?.find(p => p.id === r.user_id) || null,
-          })) as ClassReservation[];
-          setClassReservations(enriched);
-        }
+        setClassReservations(await loadClassReservations(selectedClass));
       } catch (error) {
         console.error("Error fetching reservations:", error);
       }
@@ -127,6 +132,7 @@ const CoachPortal = () => {
 
   const handleMarkAttendance = async (userId: string) => {
     try {
+      const { data: { user: authUser } } = await supabase.auth.getUser();
       if (!authUser || !selectedClass) return;
 
       const { error } = await supabase.from("attendance").insert({
@@ -139,25 +145,7 @@ const CoachPortal = () => {
       if (error) throw error;
 
       // Refresh reservations
-      const { data } = await supabase
-        .from("class_reservations")
-        .select("*")
-        .eq("class_id", selectedClass)
-        .eq("status", "confirmed");
-
-      if (data) {
-        const userIds = data.map(r => r.user_id);
-        const { data: profiles } = await supabase
-          .from("user_profiles")
-          .select("id, full_name, level")
-          .in("id", userIds);
-
-        const enriched = data.map(r => ({
-          ...r,
-          user_profiles: profiles?.find(p => p.id === r.user_id) || null,
-        })) as ClassReservation[];
-        setClassReservations(enriched);
-      }
+      setClassReservations(await loadClassReservations(selectedClass));
     } catch (error) {
       console.error("Error marking attendance:", error);
     }
@@ -217,9 +205,9 @@ const CoachPortal = () => {
                 className="card-fifa rounded-xl p-4 fifa-pattern relative z-10 flex justify-between items-center"
               >
                 <div>
-                  <p className="font-heading font-bold">{assignment.classes?.name}</p>
+                  <p className="font-heading font-bold">{assignment.class?.name}</p>
                   <p className="text-xs text-muted-foreground">
-                    {assignment.classes?.day_of_week} · {assignment.classes?.start_time}-{assignment.classes?.end_time}
+                    {assignment.class?.day_of_week} · {assignment.class?.start_time}-{assignment.class?.end_time}
                   </p>
                 </div>
                 <Button
@@ -238,7 +226,7 @@ const CoachPortal = () => {
             {selectedClass ? (
               <div className="space-y-3">
                 <p className="text-sm text-muted-foreground">
-                  Clase seleccionada: {coachClasses.find(c => c.class_id === selectedClass)?.classes?.name}
+                  Clase seleccionada: {coachClasses.find(c => c.class_id === selectedClass)?.class?.name}
                 </p>
                 {classReservations.length === 0 ? (
                   <p className="text-center text-muted-foreground">No hay reservas para esta clase</p>
@@ -251,8 +239,8 @@ const CoachPortal = () => {
                       className="card-fifa rounded-xl p-4 fifa-pattern relative z-10 flex justify-between items-center"
                     >
                       <div>
-                        <p className="font-heading font-bold">{res.user_profiles?.full_name}</p>
-                        <p className="text-xs text-muted-foreground">Nivel: {res.user_profiles?.level}</p>
+                        <p className="font-heading font-bold">{res.user?.full_name}</p>
+                        <p className="text-xs text-muted-foreground">Nivel: {res.user?.level}</p>
                       </div>
                       <Button
                         size="sm"

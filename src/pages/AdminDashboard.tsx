@@ -8,7 +8,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CircleAlert as AlertCircle, Plus, CreditCard as Edit2, Trash2, LogOut, Users, Calendar, BookOpen } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/lib/supabase";
-import { useAuthReady } from "@/hooks/use-auth-ready";
 
 interface Class {
   id: string;
@@ -40,7 +39,6 @@ interface AdminConfig {
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
-  const { user: authUser, isReady } = useAuthReady();
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [classes, setClasses] = useState<Class[]>([]);
@@ -65,25 +63,21 @@ const AdminDashboard = () => {
   });
 
   useEffect(() => {
-    if (!isReady) return;
-
     const checkAdminAndFetchData = async () => {
-      if (!authUser) {
-        setLoading(false);
-        navigate("/login");
-        return;
-      }
-
       try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          navigate("/login");
+          return;
+        }
+
         const { data: profile } = await supabase
           .from("user_profiles")
           .select("*")
-          .eq("id", authUser.id)
+          .eq("id", user.id)
           .maybeSingle();
 
         if (profile?.role !== "admin") {
-          setIsAdmin(false);
-          setLoading(false);
           navigate("/dashboard");
           return;
         }
@@ -120,8 +114,8 @@ const AdminDashboard = () => {
       }
     };
 
-    void checkAdminAndFetchData();
-  }, [authUser, isReady, navigate]);
+    checkAdminAndFetchData();
+  }, [navigate]);
 
   const handleAddClass = async () => {
     try {
@@ -185,7 +179,7 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleUpdateUserRole = async (userId: string, newRole: "admin" | "alumno" | "coach") => {
+  const handleUpdateUserRole = async (userId: string, newRole: "admin" | "coach" | "alumno") => {
     try {
       const { error } = await supabase
         .from("user_profiles")
@@ -433,7 +427,7 @@ const AdminDashboard = () => {
                       <td className="p-3">
                         <select
                           value={user.role}
-                          onChange={(e) => handleUpdateUserRole(user.id, e.target.value as "admin" | "alumno" | "coach")}
+                          onChange={(e) => handleUpdateUserRole(user.id, e.target.value as "admin" | "coach" | "alumno")}
                           className="px-2 py-1 rounded bg-secondary border border-border text-xs"
                         >
                           <option value="alumno">Alumno</option>
