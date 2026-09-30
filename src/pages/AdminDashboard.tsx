@@ -427,7 +427,7 @@ const AdminDashboard = () => {
                       <td className="p-3">
                         <select
                           value={user.role}
-                          onChange={(e) => handleUpdateUserRole(user.id, e.target.value)}
+                          onChange={(e) => handleUpdateUserRole(user.id, e.target.value as "admin" | "coach" | "alumno")}
                           className="px-2 py-1 rounded bg-secondary border border-border text-xs"
                         >
                           <option value="alumno">Alumno</option>
